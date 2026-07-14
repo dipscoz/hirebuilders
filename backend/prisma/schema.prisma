@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 
@@ -37,7 +38,6 @@ model Reservation {
 
   id Int @id @default(autoincrement())
 
-
   clientName String
 
   phone String
@@ -46,17 +46,11 @@ model Reservation {
 
   endDate String
 
-  message String
-
+  message String?
 
   employeeId Int
 
-
-  employee Employee @relation(
-    fields: [employeeId],
-    references: [id]
-  )
-
+  employee Employee @relation(fields: [employeeId], references: [id])
 
   createdAt DateTime @default(now())
 

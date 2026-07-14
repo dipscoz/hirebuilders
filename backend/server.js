@@ -4,155 +4,86 @@ require("dotenv").config();
 
 const { PrismaClient } = require("@prisma/client");
 
-
 const app = express();
 
 const prisma = new PrismaClient();
 
 
-// =======================
-// MIDDLEWARE
-// =======================
-
-app.use(cors());
+app.use(cors({
+    origin: [
+        "https://hirebuilders-tn8k.vercel.app"
+    ],
+    methods:["GET","POST"],
+}));
 
 app.use(express.json());
 
 
 
-
-// =======================
-// TEST SERVEUR
-// =======================
-
 app.get("/", (req,res)=>{
-
-res.json({
-
-message:
-"API HireBuilders fonctionne"
-
-});
-
+    res.json({
+        message:"HireBuilders API fonctionne 🚀"
+    });
 });
 
 
 
+// récupérer les employés
 
-// =======================
-// EMPLOYES
-// =======================
+app.get("/api/employees", async(req,res)=>{
 
+    try{
 
+        const employees = await prisma.employee.findMany();
 
-// GET TOUS LES EMPLOYES
-
-app.get(
-"/api/employees",
-
-async(req,res)=>{
-
-try{
+        res.json(employees);
 
 
-const employees =
-await prisma.employee.findMany({
+    }catch(error){
 
-orderBy:{
-createdAt:"desc"
-}
+        res.status(500).json({
+            error:error.message
+        });
 
-});
-
-
-res.json(employees);
-
-
-
-}catch(error){
-
-
-res.status(500).json({
-
-error:
-"Impossible de récupérer les employés"
-
-});
-
-
-}
-
+    }
 
 });
 
 
 
 
+// créer un employé
+
+app.post("/api/employees", async(req,res)=>{
+
+    try{
 
 
-// CREER UN EMPLOYE
+        const employee = await prisma.employee.create({
 
-app.post(
-"/api/employees",
+            data:req.body
 
-async(req,res)=>{
-
-
-try{
+        });
 
 
-const employee =
-await prisma.employee.create({
-
-data:{
-
-
-name:req.body.name,
-
-
-phone:req.body.phone,
-
-
-job:req.body.job,
-
-
-city:req.body.city,
-
-
-experience:req.body.experience,
-
-
-available:true
-
-
-}
-
-
-});
+        res.json(employee);
 
 
 
-res.json(employee);
+    }catch(error){
 
 
-
-}
-
-catch(error){
+        console.log(error);
 
 
-console.log(error);
+        res.status(500).json({
+
+            error:error.message
+
+        });
 
 
-res.status(500).json({
-
-error:
-"Erreur création employé"
-
-});
-
-
-}
+    }
 
 
 });
@@ -161,358 +92,13 @@ error:
 
 
 
+const PORT = process.env.PORT || 5000;
 
-// MODIFIER UN EMPLOYE
 
-app.put(
-"/api/employees/:id",
-
-async(req,res)=>{
-
-
-try{
-
-
-const employee =
-await prisma.employee.update({
-
-where:{
-
-id:Number(req.params.id)
-
-},
-
-
-data:req.body
-
-
-});
-
-
-res.json(employee);
-
-
-
-}
-
-catch(error){
-
-
-res.status(500).json({
-
-error:
-"Erreur modification"
-
-});
-
-
-}
-
-
-});
-
-
-
-
-
-
-
-
-// SUPPRIMER UN EMPLOYE
-
-app.delete(
-"/api/employees/:id",
-
-async(req,res)=>{
-
-
-try{
-
-
-await prisma.employee.delete({
-
-where:{
-
-id:Number(req.params.id)
-
-}
-
-});
-
-
-
-res.json({
-
-message:
-"Employé supprimé"
-
-});
-
-
-
-}
-
-catch(error){
-
-
-res.status(500).json({
-
-error:
-"Erreur suppression"
-
-});
-
-
-}
-
-
-});
-
-
-
-
-
-
-
-
-// =======================
-// RESERVATIONS
-// =======================
-
-
-
-// CREER RESERVATION
-
-
-app.post(
-
-"/api/reservations",
-
-async(req,res)=>{
-
-
-try{
-
-
-const reservation =
-await prisma.reservation.create({
-
-data:{
-
-
-clientName:
-req.body.clientName,
-
-
-phone:
-req.body.phone,
-
-
-startDate:
-req.body.startDate,
-
-
-endDate:
-req.body.endDate,
-
-
-message:
-req.body.message,
-
-
-employeeId:
-Number(req.body.employeeId)
-
-
-
-}
-
-
-});
-
-
-
-res.json(reservation);
-
-
-
-}
-
-catch(error){
-
-
-console.log(error);
-
-
-res.status(500).json({
-
-error:
-"Erreur réservation"
-
-});
-
-
-}
-
-
-
-}
-
-);
-
-
-
-
-
-
-
-
-// VOIR LES RESERVATIONS
-
-
-app.get(
-
-"/api/reservations",
-
-async(req,res)=>{
-
-
-try{
-
-
-const reservations =
-await prisma.reservation.findMany({
-
-include:{
-
-employee:true
-
-},
-
-
-orderBy:{
-
-createdAt:"desc"
-
-}
-
-
-});
-
-
-
-res.json(reservations);
-
-
-
-}
-
-catch(error){
-
-
-res.status(500).json({
-
-error:
-"Erreur récupération réservations"
-
-});
-
-
-}
-
-
-}
-
-);
-
-
-
-
-
-
-// =======================
-// ADMIN STATISTIQUES
-// =======================
-
-
-app.get(
-
-"/api/stats",
-
-async(req,res)=>{
-
-
-try{
-
-
-const employees =
-await prisma.employee.count();
-
-
-
-const reservations =
-await prisma.reservation.count();
-
-
-
-res.json({
-
-employees,
-
-reservations
-
-
-});
-
-
-
-}
-
-catch(error){
-
-
-res.status(500).json({
-
-error:
-"Erreur statistiques"
-
-});
-
-
-}
-
-
-
-}
-
-);
-
-
-
-
-
-
-// =======================
-// LANCEMENT SERVEUR
-// =======================
-
-
-const PORT = 5000;
-
-
-
-app.listen(
-
-PORT,
-
-()=>{
-
+app.listen(PORT,()=>{
 
 console.log(
-`🚀 HireBuilders API démarrée sur http://localhost:${PORT}`
+`🚀 Serveur HireBuilders lancé sur ${PORT}`
 );
 
-
-}
-
-);
+});
