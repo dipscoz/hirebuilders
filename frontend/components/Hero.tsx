@@ -77,28 +77,24 @@ travaux au Sénégal.
 
 <Link href="/employes">
 
-
 <button className="primary">
 
 Trouver un employé
 
 </button>
 
-
 </Link>
 
 
 
 
-<Link href="/inscription">
-
+<Link href="/inscription-employe">
 
 <button className="secondary">
 
 Rejoindre la plateforme
 
 </button>
-
 
 </Link>
 
