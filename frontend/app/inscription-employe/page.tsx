@@ -18,13 +18,16 @@ export default function InscriptionEmploye() {
   });
 
 
+
   const [message, setMessage] = useState("");
+
 
 
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement>
   ) {
+
 
     setForm({
 
@@ -34,7 +37,10 @@ export default function InscriptionEmploye() {
 
     });
 
+
   }
+
+
 
 
 
@@ -42,21 +48,28 @@ export default function InscriptionEmploye() {
   function envoyerInscription() {
 
 
+
     if (
+
       !form.name ||
       !form.phone ||
       !form.job ||
       !form.city ||
       !form.experience
+
     ) {
 
+
       setMessage(
-        "Veuillez remplir tous les champs"
+        "⚠️ Veuillez remplir tous les champs"
       );
+
 
       return;
 
     }
+
+
 
 
 
@@ -69,17 +82,22 @@ Je souhaite rejoindre la plateforme.
 👤 Nom :
 ${form.name}
 
+
 📞 Téléphone :
 ${form.phone}
+
 
 🔨 Métier :
 ${form.job}
 
+
 📍 Ville :
 ${form.city}
 
+
 ⭐ Expérience :
 ${form.experience}
+
 
 Merci.
 
@@ -87,24 +105,33 @@ Merci.
 
 
 
+
+
+
     const url =
+
       "https://wa.me/221781252980?text=" +
+
       encodeURIComponent(
         whatsappMessage
       );
 
 
 
-    window.open(
-      url,
-      "_blank"
-    );
 
 
 
     setMessage(
-      "Redirection vers WhatsApp..."
+      "✅ Ouverture de WhatsApp..."
     );
+
+
+
+
+
+    window.location.href = url;
+
+
 
   }
 
@@ -112,173 +139,263 @@ Merci.
 
 
 
-return (
 
-<main className="inscription-page">
 
 
-<div className="inscription-container">
+  return (
 
 
-<Link href="/" className="back">
+    <main className="inscription-page">
 
-← Retour accueil
 
-</Link>
 
+      <div className="inscription-container">
 
 
-<h1>
 
-Devenir employé 
-<span>
-HireBuilders
-</span>
 
-</h1>
 
 
+        <Link
+          href="/"
+          className="back"
+        >
 
-<p>
+          ← Retour accueil
 
-Crée ton profil professionnel
-et trouve des chantiers au Sénégal.
+        </Link>
 
-</p>
 
 
 
 
-<div className="form-box">
 
 
+        <h1>
 
-<input
+          Devenir employé
 
-type="text"
+          <span>
 
-name="name"
+            HireBuilders
 
-placeholder="Nom complet"
+          </span>
 
-value={form.name}
 
-onChange={handleChange}
+        </h1>
 
-/>
 
 
 
 
 
-<input
 
-type="tel"
+        <p>
 
-name="phone"
+          Crée ton profil professionnel
+          et trouve des chantiers au Sénégal.
 
-placeholder="Téléphone"
+        </p>
 
-value={form.phone}
 
-onChange={handleChange}
 
-/>
 
 
 
 
 
-<input
 
-type="text"
+        <div className="form-box">
 
-name="job"
 
-placeholder="Métier (Maçon, Électricien...)"
 
-value={form.job}
 
-onChange={handleChange}
 
-/>
 
 
+          <input
 
 
+            type="text"
 
-<input
+            name="name"
 
-type="text"
+            placeholder="Nom complet"
 
-name="city"
+            value={form.name}
 
-placeholder="Ville"
+            onChange={handleChange}
 
-value={form.city}
 
-onChange={handleChange}
+          />
 
-/>
 
 
 
 
 
-<input
 
-type="text"
 
-name="experience"
 
-placeholder="Expérience (ex: 5 ans)"
 
-value={form.experience}
+          <input
 
-onChange={handleChange}
 
-/>
+            type="tel"
 
+            name="phone"
 
+            placeholder="Téléphone"
 
+            value={form.phone}
 
+            onChange={handleChange}
 
-<button
 
-onClick={envoyerInscription}
+          />
 
->
 
-Envoyer mon inscription
 
-</button>
 
 
 
 
-{
-message &&
 
-<div className="status">
 
-{message}
+          <input
 
-</div>
 
-}
+            type="text"
 
+            name="job"
 
+            placeholder="Métier (Maçon, Électricien...)"
 
-</div>
+            value={form.job}
 
+            onChange={handleChange}
 
 
-</div>
+          />
 
 
-</main>
 
-);
+
+
+
+
+
+
+          <input
+
+
+            type="text"
+
+            name="city"
+
+            placeholder="Ville"
+
+            value={form.city}
+
+            onChange={handleChange}
+
+
+          />
+
+
+
+
+
+
+
+
+
+          <input
+
+
+            type="text"
+
+            name="experience"
+
+            placeholder="Expérience (ex: 5 ans)"
+
+            value={form.experience}
+
+            onChange={handleChange}
+
+
+          />
+
+
+
+
+
+
+
+
+
+          <button
+
+
+            type="button"
+
+            onClick={envoyerInscription}
+
+
+          >
+
+            Envoyer mon inscription
+
+
+          </button>
+
+
+
+
+
+
+
+
+
+          {
+
+            message &&
+
+
+            <div className="status">
+
+
+              {message}
+
+
+            </div>
+
+
+          }
+
+
+
+
+
+
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+
+
+
+    </main>
+
+
+  );
 
 
 }
