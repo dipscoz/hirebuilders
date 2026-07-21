@@ -38,6 +38,8 @@ Plateforme BTP Sénégal
 
 
 
+
+
 <nav>
 
 
@@ -66,6 +68,8 @@ Contact
 
 
 
+
+
 <div className="nav-actions">
 
 
@@ -81,7 +85,9 @@ Connexion
 
 
 
-<Link href="/inscription">
+
+
+<Link href="/inscription-employe">
 
 <button className="signup">
 
@@ -93,6 +99,7 @@ Devenir employé
 
 
 </div>
+
 
 
 </header>
