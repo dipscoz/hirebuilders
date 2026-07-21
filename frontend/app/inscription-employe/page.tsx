@@ -1,124 +1,276 @@
 "use client";
 
-import {useState} from "react";
+import { useState } from "react";
+import Link from "next/link";
 
 
-export default function InscriptionEmploye(){
+export default function InscriptionEmploye() {
 
 
-const [form,setForm]=useState({
+  const [form, setForm] = useState({
 
-nom:"",
-metier:"",
-experience:"",
-telephone:"",
-ville:""
+    name: "",
+    phone: "",
+    job: "",
+    city: "",
+    experience: ""
 
-});
+  });
 
 
-function changer(e:any){
-
-setForm({
-
-...form,
-
-[e.target.name]:e.target.value
-
-});
-
-}
+  const [message, setMessage] = useState("");
 
 
 
-async function envoyer(){
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
 
+    setForm({
 
-await fetch(
-"http://localhost:5000/api/employees",
-{
+      ...form,
 
-method:"POST",
+      [e.target.name]: e.target.value
 
-headers:{
-"Content-Type":"application/json"
-},
+    });
 
-body:JSON.stringify({
-
-...form,
-
-image:"https://picsum.photos/400",
-
-disponible:true
-
-})
-
-});
-
-
-alert("Inscription envoyée !");
-
-
-}
+  }
 
 
 
-return(
 
-<main className="cat-page">
+  function envoyerInscription() {
+
+
+    if (
+      !form.name ||
+      !form.phone ||
+      !form.job ||
+      !form.city ||
+      !form.experience
+    ) {
+
+      setMessage(
+        "Veuillez remplir tous les champs"
+      );
+
+      return;
+
+    }
+
+
+
+    const whatsappMessage = `
+
+Bonjour HireBuilders 👷
+
+Je souhaite rejoindre la plateforme.
+
+👤 Nom :
+${form.name}
+
+📞 Téléphone :
+${form.phone}
+
+🔨 Métier :
+${form.job}
+
+📍 Ville :
+${form.city}
+
+⭐ Expérience :
+${form.experience}
+
+Merci.
+
+`;
+
+
+
+    const url =
+      "https://wa.me/221781252980?text=" +
+      encodeURIComponent(
+        whatsappMessage
+      );
+
+
+
+    window.open(
+      url,
+      "_blank"
+    );
+
+
+
+    setMessage(
+      "Redirection vers WhatsApp..."
+    );
+
+  }
+
+
+
+
+
+return (
+
+<main className="inscription-page">
+
+
+<div className="inscription-container">
+
+
+<Link href="/" className="back">
+
+← Retour accueil
+
+</Link>
+
 
 
 <h1>
 
-Devenir employé
+Devenir employé 
+<span>
+HireBuilders
+</span>
 
 </h1>
+
+
+
+<p>
+
+Crée ton profil professionnel
+et trouve des chantiers au Sénégal.
+
+</p>
+
+
 
 
 <div className="form-box">
 
 
+
 <input
-name="nom"
+
+type="text"
+
+name="name"
+
 placeholder="Nom complet"
-onChange={changer}
+
+value={form.name}
+
+onChange={handleChange}
+
 />
 
 
-<input
-name="metier"
-placeholder="Métier (Maçon, Plombier...)"
-onChange={changer}
-/>
+
 
 
 <input
-name="experience"
-placeholder="Expérience"
-onChange={changer}
-/>
 
+type="tel"
 
-<input
-name="telephone"
+name="phone"
+
 placeholder="Téléphone"
-onChange={changer}
+
+value={form.phone}
+
+onChange={handleChange}
+
 />
+
+
+
 
 
 <input
-name="ville"
-placeholder="Ville"
-onChange={changer}
+
+type="text"
+
+name="job"
+
+placeholder="Métier (Maçon, Électricien...)"
+
+value={form.job}
+
+onChange={handleChange}
+
 />
 
 
-<button onClick={envoyer}>
 
-Créer mon profil
+
+
+<input
+
+type="text"
+
+name="city"
+
+placeholder="Ville"
+
+value={form.city}
+
+onChange={handleChange}
+
+/>
+
+
+
+
+
+<input
+
+type="text"
+
+name="experience"
+
+placeholder="Expérience (ex: 5 ans)"
+
+value={form.experience}
+
+onChange={handleChange}
+
+/>
+
+
+
+
+
+<button
+
+onClick={envoyerInscription}
+
+>
+
+Envoyer mon inscription
 
 </button>
+
+
+
+
+{
+message &&
+
+<div className="status">
+
+{message}
+
+</div>
+
+}
+
+
+
+</div>
+
 
 
 </div>
@@ -126,6 +278,7 @@ Créer mon profil
 
 </main>
 
-)
+);
+
 
 }
