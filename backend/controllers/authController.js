@@ -6,11 +6,6 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
-
-// =========================================================
-// CONFIGURATION
-// =========================================================
-
 const JWT_SECRET =
   process.env.JWT_SECRET ||
   "hirebuilders-dev-secret";
@@ -24,11 +19,6 @@ const FRONTEND_URL =
   process.env.FRONTEND_URL ||
   "http://localhost:3000";
 
-
-// =========================================================
-// GOOGLE OAUTH
-// =========================================================
-
 const GOOGLE_CLIENT_ID =
   process.env.GOOGLE_CLIENT_ID;
 
@@ -39,7 +29,6 @@ const GOOGLE_REDIRECT_URI =
   process.env.GOOGLE_REDIRECT_URI ||
   "http://localhost:5000/api/auth/google/callback";
 
-
 const googleOAuth2Client =
   new google.auth.OAuth2(
     GOOGLE_CLIENT_ID,
@@ -47,21 +36,17 @@ const googleOAuth2Client =
     GOOGLE_REDIRECT_URI
   );
 
-
-// =========================================================
-// ADMIN
-// =========================================================
+function normalizeEmail(email) {
+  return String(email || "")
+    .trim()
+    .toLowerCase();
+}
 
 function isAdminEmail(email) {
   return ADMIN_EMAILS.includes(
-    email.trim().toLowerCase()
+    normalizeEmail(email)
   );
 }
-
-
-// =========================================================
-// CREATION TOKEN
-// =========================================================
 
 function createToken(user) {
   return jwt.sign(
@@ -79,10 +64,16 @@ function createToken(user) {
   );
 }
 
-
-// =========================================================
-// COOKIE SESSION
-// =========================================================
+function getPublicUser(user) {
+  return {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    phone: user.phone || "",
+    role: user.role,
+  };
+}
 
 function setAuthCookie(res, token) {
   res.cookie(
@@ -90,24 +81,20 @@ function setAuthCookie(res, token) {
     token,
     {
       httpOnly: true,
-
       secure:
         process.env.NODE_ENV ===
         "production",
-
       sameSite:
         process.env.NODE_ENV ===
         "production"
           ? "none"
           : "lax",
-
       maxAge:
         7 *
         24 *
         60 *
         60 *
         1000,
-
       path: "/",
     }
   );
@@ -142,7 +129,7 @@ async function register(req, res) {
       });
     }
 
-    if (password.length < 6) {
+    if (String(password).length < 6) {
       return res.status(400).json({
         success: false,
         message:
@@ -151,7 +138,7 @@ async function register(req, res) {
     }
 
     const normalizedEmail =
-      email.trim().toLowerCase();
+      normalizeEmail(email);
 
     const existingUser =
       await prisma.user.findUnique({
@@ -175,9 +162,7 @@ async function register(req, res) {
       );
 
     const role =
-      isAdminEmail(
-        normalizedEmail
-      )
+      isAdminEmail(normalizedEmail)
         ? "admin"
         : "user";
 
@@ -185,19 +170,14 @@ async function register(req, res) {
       await prisma.user.create({
         data: {
           firstName:
-            firstName.trim(),
-
+            String(firstName).trim(),
           lastName:
-            lastName.trim(),
-
+            String(lastName).trim(),
           email:
             normalizedEmail,
-
           phone:
-            phone.trim(),
-
+            String(phone).trim(),
           passwordHash,
-
           role,
         },
       });
@@ -205,34 +185,17 @@ async function register(req, res) {
     const token =
       createToken(user);
 
-    setAuthCookie(
-      res,
-      token
-    );
+    setAuthCookie(res, token);
 
     return res.status(201).json({
       success: true,
-
       message:
         "Compte créé avec succès.",
-
-      user: {
-        id: user.id,
-        firstName:
-          user.firstName,
-        lastName:
-          user.lastName,
-        email:
-          user.email,
-        phone:
-          user.phone,
-        role:
-          user.role,
-      },
-
+      token,
+      user:
+        getPublicUser(user),
       redirect:
-        user.role ===
-        "admin"
+        role === "admin"
           ? "/admin"
           : "/",
     });
@@ -252,7 +215,7 @@ async function register(req, res) {
 
 
 // =========================================================
-// CONNEXION CLASSIQUE
+// CONNEXION
 // =========================================================
 
 async function login(req, res) {
@@ -262,10 +225,7 @@ async function login(req, res) {
       password,
     } = req.body;
 
-    if (
-      !email ||
-      !password
-    ) {
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
         message:
@@ -274,13 +234,12 @@ async function login(req, res) {
     }
 
     const normalizedEmail =
-      email.trim().toLowerCase();
+      normalizeEmail(email);
 
     const user =
       await prisma.user.findUnique({
         where: {
-          email:
-            normalizedEmail,
+          email: normalizedEmail,
         },
       });
 
@@ -292,13 +251,13 @@ async function login(req, res) {
       });
     }
 
-    const passwordValid =
+    const valid =
       await bcrypt.compare(
         password,
         user.passwordHash
       );
 
-    if (!passwordValid) {
+    if (!valid) {
       return res.status(401).json({
         success: false,
         message:
@@ -316,18 +275,13 @@ async function login(req, res) {
     ) {
       role = "admin";
 
-      if (
-        user.role !==
-        "admin"
-      ) {
+      if (user.role !== "admin") {
         await prisma.user.update({
           where: {
             id: user.id,
           },
-
           data: {
-            role:
-              "admin",
+            role: "admin",
           },
         });
       }
@@ -339,39 +293,21 @@ async function login(req, res) {
     };
 
     const token =
-      createToken(
-        loggedUser
-      );
+      createToken(loggedUser);
 
-    setAuthCookie(
-      res,
-      token
-    );
+    setAuthCookie(res, token);
 
     return res.json({
       success: true,
-
       message:
         "Connexion réussie.",
-
-      user: {
-        id:
-          loggedUser.id,
-        firstName:
-          loggedUser.firstName,
-        lastName:
-          loggedUser.lastName,
-        email:
-          loggedUser.email,
-        phone:
-          loggedUser.phone,
-        role:
-          loggedUser.role,
-      },
-
+      token,
+      user:
+        getPublicUser(
+          loggedUser
+        ),
       redirect:
-        loggedUser.role ===
-        "admin"
+        role === "admin"
           ? "/admin"
           : "/",
     });
@@ -391,7 +327,7 @@ async function login(req, res) {
 
 
 // =========================================================
-// GOOGLE : REDIRECTION
+// GOOGLE LOGIN
 // =========================================================
 
 function googleLogin(req, res) {
@@ -400,17 +336,17 @@ function googleLogin(req, res) {
       !GOOGLE_CLIENT_ID ||
       !GOOGLE_CLIENT_SECRET
     ) {
-      return res.status(500).send(
-        "Google OAuth n'est pas configuré sur le serveur."
-      );
+      return res
+        .status(500)
+        .send(
+          "Google OAuth n'est pas configuré."
+        );
     }
 
     const url =
       googleOAuth2Client.generateAuthUrl({
         access_type: "offline",
-
         prompt: "select_account",
-
         scope: [
           "openid",
           "email",
@@ -418,24 +354,24 @@ function googleLogin(req, res) {
         ],
       });
 
-    return res.redirect(
-      url
-    );
+    return res.redirect(url);
   } catch (error) {
     console.error(
       "Erreur Google OAuth :",
       error
     );
 
-    return res.status(500).send(
-      "Impossible de démarrer la connexion Google."
-    );
+    return res
+      .status(500)
+      .send(
+        "Impossible de démarrer Google."
+      );
   }
 }
 
 
 // =========================================================
-// GOOGLE : CALLBACK
+// GOOGLE CALLBACK
 // =========================================================
 
 async function googleCallback(
@@ -452,9 +388,7 @@ async function googleCallback(
       );
     }
 
-    const {
-      tokens,
-    } =
+    const { tokens } =
       await googleOAuth2Client.getToken(
         code
       );
@@ -467,8 +401,7 @@ async function googleCallback(
       google.oauth2({
         auth:
           googleOAuth2Client,
-        version:
-          "v2",
+        version: "v2",
       });
 
     const {
@@ -477,63 +410,37 @@ async function googleCallback(
       await oauth2.userinfo.get();
 
     const googleEmail =
-      googleUser.email
-        ?.trim()
-        .toLowerCase();
-
-    const emailVerified =
-      googleUser.verified_email ===
-      true;
+      normalizeEmail(
+        googleUser.email
+      );
 
     if (
       !googleEmail ||
-      !emailVerified
+      googleUser.verified_email !== true
     ) {
       return res.redirect(
         `${FRONTEND_URL}/connexion?error=google_email_not_verified`
       );
     }
 
-
-    // ======================================================
-    // RETROUVER LE COMPTE
-    // ======================================================
-
     let user =
       await prisma.user.findUnique({
         where: {
-          email:
-            googleEmail,
+          email: googleEmail,
         },
       });
 
-
-    // ======================================================
-    // CREER LE COMPTE SI NECESSAIRE
-    // ======================================================
-
     if (!user) {
-
       const randomPassword =
-        crypto.randomBytes(
-          32
-        ).toString(
-          "hex"
-        );
+        crypto
+          .randomBytes(32)
+          .toString("hex");
 
       const passwordHash =
         await bcrypt.hash(
           randomPassword,
           12
         );
-
-      const firstName =
-        googleUser.given_name ||
-        "Utilisateur";
-
-      const lastName =
-        googleUser.family_name ||
-        "Google";
 
       const role =
         isAdminEmail(
@@ -542,15 +449,20 @@ async function googleCallback(
           ? "admin"
           : "user";
 
-
       user =
         await prisma.user.create({
           data: {
             firstName:
-              firstName.trim(),
+              String(
+                googleUser.given_name ||
+                  "Utilisateur"
+              ).trim(),
 
             lastName:
-              lastName.trim(),
+              String(
+                googleUser.family_name ||
+                  "Google"
+              ).trim(),
 
             email:
               googleEmail,
@@ -562,65 +474,39 @@ async function googleCallback(
             role,
           },
         });
-
-    } else {
-
-      // ====================================================
-      // GARANTIR LE ROLE ADMIN
-      // ====================================================
-
-      if (
-        isAdminEmail(
-          googleEmail
-        ) &&
-        user.role !==
-          "admin"
-      ) {
-
-        user =
-          await prisma.user.update({
-            where: {
-              id:
-                user.id,
-            },
-
-            data: {
-              role:
-                "admin",
-            },
-          });
-      }
+    } else if (
+      isAdminEmail(
+        googleEmail
+      ) &&
+      user.role !== "admin"
+    ) {
+      user =
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            role: "admin",
+          },
+        });
     }
 
-
-    // ======================================================
-    // CREATION SESSION HIREBUILDERS
-    // ======================================================
-
     const token =
-      createToken(
-        user
-      );
+      createToken(user);
 
     setAuthCookie(
       res,
       token
     );
 
-
-    const redirect =
-      user.role ===
-      "admin"
-        ? "/admin"
-        : "/";
-
-
     return res.redirect(
-      `${FRONTEND_URL}${redirect}`
+      `${FRONTEND_URL}${
+        user.role === "admin"
+          ? "/admin"
+          : "/"
+      }`
     );
-
   } catch (error) {
-
     console.error(
       "Erreur callback Google :",
       error
@@ -639,9 +525,24 @@ async function googleCallback(
 
 async function me(req, res) {
   try {
+    let token =
+      req.cookies
+        ?.hirebuilders_token;
 
-    const token =
-      req.cookies?.hirebuilders_token;
+    if (!token) {
+      const authorization =
+        req.headers.authorization;
+
+      if (
+        authorization &&
+        authorization.startsWith(
+          "Bearer "
+        )
+      ) {
+        token =
+          authorization.slice(7);
+      }
+    }
 
     if (!token) {
       return res.status(401).json({
@@ -660,23 +561,17 @@ async function me(req, res) {
     const user =
       await prisma.user.findUnique({
         where: {
-          id:
-            decoded.id,
+          id: Number(
+            decoded.id
+          ),
         },
-
         select: {
           id: true,
-
           firstName: true,
-
           lastName: true,
-
           email: true,
-
           phone: true,
-
           role: true,
-
           createdAt: true,
         },
       });
@@ -696,37 +591,28 @@ async function me(req, res) {
         ? "admin"
         : user.role;
 
-
     if (
       role === "admin" &&
       user.role !== "admin"
     ) {
-
       await prisma.user.update({
         where: {
-          id:
-            user.id,
+          id: user.id,
         },
-
         data: {
-          role:
-            "admin",
+          role: "admin",
         },
       });
     }
 
-
     return res.json({
       success: true,
-
       user: {
         ...user,
         role,
       },
     });
-
   } catch (error) {
-
     console.error(
       "Erreur session :",
       error
@@ -742,36 +628,31 @@ async function me(req, res) {
 
 
 // =========================================================
-// DECONNEXION
+// LOGOUT
 // =========================================================
 
 async function logout(
   req,
   res
 ) {
-
   res.clearCookie(
     "hirebuilders_token",
     {
       httpOnly: true,
-
       secure:
         process.env.NODE_ENV ===
         "production",
-
       sameSite:
         process.env.NODE_ENV ===
         "production"
           ? "none"
           : "lax",
-
       path: "/",
     }
   );
 
   return res.json({
     success: true,
-
     message:
       "Déconnexion réussie.",
   });

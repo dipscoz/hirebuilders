@@ -1,60 +1,78 @@
 const jwt = require("jsonwebtoken");
 
+// =========================================================
+// CONFIGURATION
+// =========================================================
+
 const JWT_SECRET =
   process.env.JWT_SECRET ||
   "hirebuilders-dev-secret";
 
-const COOKIE_NAME =
-  "hirebuilders_token";
+const ADMIN_EMAILS = [
+  "dipscoz@gmail.com",
+  "ndeyebirametall50@gmail.com",
+];
 
-function getTokenFromRequest(req) {
-  const cookieHeader =
-    req.headers.cookie;
 
-  if (!cookieHeader) {
-    return null;
-  }
+// =========================================================
+// NORMALISER EMAIL
+// =========================================================
 
-  const cookies = {};
-
-  cookieHeader
-    .split(";")
-    .forEach((part) => {
-      const separator =
-        part.indexOf("=");
-
-      if (separator === -1) {
-        return;
-      }
-
-      const name =
-        part
-          .slice(0, separator)
-          .trim();
-
-      const value =
-        part
-          .slice(separator + 1)
-          .trim();
-
-      cookies[name] =
-        decodeURIComponent(value);
-    });
-
-  return cookies[COOKIE_NAME] || null;
+function normalizeEmail(email) {
+  return String(email || "")
+    .trim()
+    .toLowerCase();
 }
 
-function auth(req, res, next) {
+
+// =========================================================
+// VERIFIER ADMIN
+// =========================================================
+
+function isAdmin(user) {
+  if (!user) {
+    return false;
+  }
+
+  const email =
+    normalizeEmail(user.email);
+
+  const role =
+    String(user.role || "")
+      .trim()
+      .toLowerCase();
+
+  return (
+    role === "admin" ||
+    ADMIN_EMAILS.includes(email)
+  );
+}
+
+
+// =========================================================
+// MIDDLEWARE ADMIN
+// =========================================================
+
+function adminAuth(req, res, next) {
   try {
     const token =
-      getTokenFromRequest(req);
+      req.cookies?.hirebuilders_token;
+
+    // -------------------------------------------------------
+    // PAS DE COOKIE
+    // -------------------------------------------------------
 
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: "Non connecté.",
+        message:
+          "Authentification requise.",
       });
     }
+
+    // -------------------------------------------------------
+    // VERIFICATION JWT
+    // -------------------------------------------------------
 
     const decoded =
       jwt.verify(
@@ -62,21 +80,63 @@ function auth(req, res, next) {
         JWT_SECRET
       );
 
-    req.user = decoded;
+    if (!decoded?.id) {
+      return res.status(401).json({
+        success: false,
+        message:
+          "Session invalide.",
+      });
+    }
+
+    // -------------------------------------------------------
+    // VERIFICATION ADMIN
+    // -------------------------------------------------------
+
+    if (!isAdmin(decoded)) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Accès administrateur refusé.",
+      });
+    }
+
+    // -------------------------------------------------------
+    // STOCKER L'UTILISATEUR
+    // -------------------------------------------------------
+
+    req.user = {
+      id:
+        Number(decoded.id),
+
+      email:
+        normalizeEmail(
+          decoded.email
+        ),
+
+      role:
+        "admin",
+
+      firstName:
+        decoded.firstName || "",
+
+      lastName:
+        decoded.lastName || "",
+    };
 
     next();
   } catch (error) {
     console.error(
-      "Erreur auth middleware :",
+      "Erreur adminAuth :",
       error
     );
 
     return res.status(401).json({
       success: false,
       message:
-        "Session invalide ou expirée.",
+        "Session administrateur invalide.",
     });
   }
 }
 
-module.exports = auth;
+
+module.exports = adminAuth;

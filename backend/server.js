@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
@@ -22,9 +23,50 @@ const FRONTEND_URL =
 // CORS
 // =========================================================
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://hirebuilders-tn8k.vercel.app",
+  FRONTEND_URL,
+].filter(Boolean);
+
+
+// Supprimer les doublons.
+const uniqueOrigins = [
+  ...new Set(allowedOrigins),
+];
+
+
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin(origin, callback) {
+      // Autoriser les requêtes sans Origin
+      // (curl, certains outils backend, etc.).
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (
+        uniqueOrigins.includes(
+          origin
+        )
+      ) {
+        return callback(
+          null,
+          true
+        );
+      }
+
+      console.warn(
+        "Origine CORS refusée :",
+        origin
+      );
+
+      return callback(
+        new Error(
+          "Origine non autorisée par CORS."
+        )
+      );
+    },
 
     credentials: true,
 
@@ -46,7 +88,7 @@ app.use(
 
 
 // =========================================================
-// EXPRESS
+// EXPRESS BODY
 // =========================================================
 
 app.use(
@@ -64,6 +106,18 @@ app.use(
 
 
 // =========================================================
+// COOKIE PARSER
+// =========================================================
+//
+// INDISPENSABLE POUR req.cookies.hirebuilders_token
+//
+
+app.use(
+  cookieParser()
+);
+
+
+// =========================================================
 // ROUTES
 // =========================================================
 
@@ -74,19 +128,29 @@ const employeesRoutes =
   require("./routes/employees");
 
 const employeeApprovalRoutes =
-  require("./routes/employeeApprovalRoutes");
+  require(
+    "./routes/employeeApprovalRoutes"
+  );
 
 const employeeApplicationRoutes =
-  require("./routes/employeeApplicationRoutes");
+  require(
+    "./routes/employeeApplicationRoutes"
+  );
 
 const reservationsRoutes =
-  require("./routes/reservationRoutes");
+  require(
+    "./routes/reservationRoutes"
+  );
 
 const notificationRoutes =
-  require("./routes/notificationRoutes");
+  require(
+    "./routes/notificationRoutes"
+  );
 
 const messageRoutes =
-  require("./routes/messageRoutes");
+  require(
+    "./routes/messageRoutes"
+  );
 
 
 // =========================================================
@@ -135,7 +199,7 @@ app.use(
 );
 
 
-// Messagerie client ↔ HireBuilders
+// Messagerie
 app.use(
   "/api/messages",
   messageRoutes
@@ -173,10 +237,39 @@ app.get(
         "Serveur HireBuilders opérationnel.",
 
       port:
-        PORT,
+        String(PORT),
 
       frontend:
         FRONTEND_URL,
+    });
+  }
+);
+
+
+// =========================================================
+// TEST SESSION
+// =========================================================
+//
+// Utile pour vérifier que cookie-parser fonctionne.
+// Ne remplace pas /api/auth/me.
+//
+
+app.get(
+  "/api/debug/session",
+  (req, res) => {
+    const token =
+      req.cookies
+        ?.hirebuilders_token ||
+      null;
+
+    return res.json({
+      success: true,
+
+      hasCookie:
+        Boolean(token),
+
+      cookieName:
+        "hirebuilders_token",
     });
   }
 );
@@ -237,7 +330,9 @@ app.use(
 const server =
   app.listen(
     PORT,
+    "0.0.0.0",
     () => {
+
       console.log("");
 
       console.log(
@@ -263,6 +358,20 @@ const server =
       console.log("");
 
       console.log(
+        "CORS autorisés :"
+      );
+
+      uniqueOrigins.forEach(
+        (origin) => {
+          console.log(
+            `  - ${origin}`
+          );
+        }
+      );
+
+      console.log("");
+
+      console.log(
         "Routes disponibles :"
       );
 
@@ -272,6 +381,10 @@ const server =
 
       console.log(
         "  GET  /api/health"
+      );
+
+      console.log(
+        "  GET  /api/debug/session"
       );
 
       console.log(
@@ -320,6 +433,7 @@ function shutdown(
 
   server.close(
     () => {
+
       console.log(
         "Serveur HireBuilders arrêté."
       );
@@ -330,6 +444,7 @@ function shutdown(
 
   setTimeout(
     () => {
+
       console.error(
         "Arrêt forcé du serveur."
       );
@@ -343,10 +458,12 @@ function shutdown(
 
 process.on(
   "SIGINT",
-  () => shutdown("SIGINT")
+  () =>
+    shutdown("SIGINT")
 );
 
 process.on(
   "SIGTERM",
-  () => shutdown("SIGTERM")
+  () =>
+    shutdown("SIGTERM")
 );

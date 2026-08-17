@@ -1,16 +1,18 @@
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 
-const auth = require("../middleware/auth");
-const adminAuth = require("../middleware/adminAuth");
+const adminAuth =
+  require("../middleware/adminAuth");
 
-const router = express.Router();
+const router =
+  express.Router();
 
-const prisma = new PrismaClient();
+const prisma =
+  new PrismaClient();
 
 
 // =========================================================
-// ADMIN : TOUTES LES RÉSERVATIONS
+// ADMIN : TOUTES LES RESERVATIONS
 // =========================================================
 
 router.get(
@@ -29,14 +31,17 @@ router.get(
           },
         });
 
-      res.json(reservations);
+      return res.json({
+        success: true,
+        reservations,
+      });
     } catch (error) {
       console.error(
-        "Erreur réservations admin :",
+        "Erreur récupération réservations :",
         error
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message:
           "Erreur serveur.",
@@ -47,94 +52,16 @@ router.get(
 
 
 // =========================================================
-// CLIENT : MES RÉSERVATIONS
-// =========================================================
-
-router.get(
-  "/mine",
-  auth,
-  async (req, res) => {
-    try {
-      const email =
-        req.user.email
-          ?.trim()
-          .toLowerCase();
-
-      if (!email) {
-        return res.status(401).json({
-          success: false,
-          message:
-            "Utilisateur invalide.",
-        });
-      }
-
-      const reservations =
-        await prisma.reservation.findMany({
-          where: {
-            clientEmail: email,
-          },
-
-          select: {
-            id: true,
-            clientName: true,
-            clientEmail: true,
-            startDate: true,
-            endDate: true,
-            message: true,
-            status: true,
-            createdAt: true,
-
-            employee: {
-              select: {
-                id: true,
-                name: true,
-                job: true,
-                city: true,
-                experience: true,
-                available: true,
-
-                // IMPORTANT :
-                // jamais de téléphone employé
-              },
-            },
-          },
-
-          orderBy: {
-            createdAt: "desc",
-          },
-        });
-
-      return res.json({
-        success: true,
-        reservations,
-      });
-    } catch (error) {
-      console.error(
-        "Erreur mes réservations :",
-        error
-      );
-
-      return res.status(500).json({
-        success: false,
-        message:
-          "Impossible de charger vos réservations.",
-      });
-    }
-  }
-);
-
-
-// =========================================================
-// CLIENT : CRÉER UNE RÉSERVATION
+// CREER UNE RESERVATION
 // =========================================================
 
 router.post(
   "/",
-  auth,
   async (req, res) => {
     try {
       const {
         clientName,
+        clientEmail,
         phone,
         startDate,
         endDate,
@@ -142,18 +69,10 @@ router.post(
         employeeId,
       } = req.body;
 
-      const clientEmail =
-        req.user.email
-          ?.trim()
-          .toLowerCase();
 
-      if (!clientEmail) {
-        return res.status(401).json({
-          success: false,
-          message:
-            "Session utilisateur invalide.",
-        });
-      }
+      // -----------------------------------------------------
+      // VALIDATION
+      // -----------------------------------------------------
 
       if (
         !clientName ||
@@ -165,41 +84,40 @@ router.post(
         return res.status(400).json({
           success: false,
           message:
-            "Veuillez remplir tous les champs obligatoires.",
+            "Les champs obligatoires sont manquants.",
         });
       }
 
-      const start =
-        new Date(startDate);
 
-      const end =
-        new Date(endDate);
+      const employeeIdNumber =
+        Number(employeeId);
+
 
       if (
-        Number.isNaN(start.getTime()) ||
-        Number.isNaN(end.getTime())
+        !Number.isInteger(
+          employeeIdNumber
+        )
       ) {
         return res.status(400).json({
           success: false,
           message:
-            "Dates invalides.",
+            "Employé invalide.",
         });
       }
 
-      if (end < start) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "La date de fin doit être après la date de début.",
-        });
-      }
+
+      // -----------------------------------------------------
+      // VERIFIER EMPLOYE
+      // -----------------------------------------------------
 
       const employee =
         await prisma.employee.findUnique({
           where: {
-            id: Number(employeeId),
+            id:
+              employeeIdNumber,
           },
         });
+
 
       if (!employee) {
         return res.status(404).json({
@@ -209,53 +127,112 @@ router.post(
         });
       }
 
+
+      // -----------------------------------------------------
+      // SEUL UN EMPLOYE APPROUVE PEUT ETRE RESERVE
+      // -----------------------------------------------------
+
       if (
-        employee.status !== "active"
+        employee.status !==
+        "active"
       ) {
         return res.status(400).json({
           success: false,
           message:
-            "Cet employé n'est pas actuellement disponible à la réservation.",
+            "Cet employé n'est pas disponible sur la plateforme.",
         });
       }
 
-      if (!employee.available) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Cet employé est actuellement indisponible.",
-        });
-      }
 
       const reservation =
         await prisma.reservation.create({
           data: {
             clientName:
-              clientName.trim(),
+              String(
+                clientName
+              ).trim(),
 
-            // IMPORTANT :
-            // le serveur prend l'email
-            // depuis le JWT et non
-            // depuis le navigateur.
-            clientEmail,
+            clientEmail:
+              clientEmail
+                ? String(
+                    clientEmail
+                  ).trim()
+                : null,
 
             phone:
-              phone.trim(),
+              String(
+                phone
+              ).trim(),
 
-            startDate,
+            startDate:
+              String(
+                startDate
+              ).trim(),
 
-            endDate,
+            endDate:
+              String(
+                endDate
+              ).trim(),
 
             message:
-              message?.trim() || null,
+              message
+                ? String(
+                    message
+                  ).trim()
+                : null,
 
             employeeId:
-              Number(employeeId),
+              employeeIdNumber,
 
             status:
               "pending",
           },
         });
+
+
+      // -----------------------------------------------------
+      // NOTIFICATION AUX ADMINS
+      // -----------------------------------------------------
+
+      const admins =
+        await prisma.user.findMany({
+          where: {
+            role: "admin",
+          },
+
+          select: {
+            id: true,
+          },
+        });
+
+
+      if (
+        admins.length >
+        0
+      ) {
+        await prisma.notification.createMany({
+          data:
+            admins.map(
+              (admin) => ({
+                userId:
+                  admin.id,
+
+                type:
+                  "new_reservation",
+
+                title:
+                  "Nouvelle réservation",
+
+                message:
+                  `${clientName} demande ${employee.name} du ${startDate} au ${endDate}.`,
+
+                reservationId:
+                  reservation.id,
+              })
+            ),
+        });
+      }
+
 
       return res.status(201).json({
         success: true,
@@ -263,15 +240,7 @@ router.post(
         message:
           "Votre demande a été envoyée à HireBuilders.",
 
-        reservation: {
-          id: reservation.id,
-          startDate:
-            reservation.startDate,
-          endDate:
-            reservation.endDate,
-          status:
-            reservation.status,
-        },
+        reservation,
       });
     } catch (error) {
       console.error(
@@ -282,93 +251,7 @@ router.post(
       return res.status(500).json({
         success: false,
         message:
-          "Impossible de créer la réservation.",
-      });
-    }
-  }
-);
-
-
-// =========================================================
-// CLIENT : ANNULER SA RÉSERVATION
-// =========================================================
-
-router.put(
-  "/:id/cancel",
-  auth,
-  async (req, res) => {
-    try {
-      const id =
-        Number(req.params.id);
-
-      const email =
-        req.user.email
-          ?.trim()
-          .toLowerCase();
-
-      if (!email) {
-        return res.status(401).json({
-          success: false,
-          message:
-            "Session invalide.",
-        });
-      }
-
-      const reservation =
-        await prisma.reservation.findFirst({
-          where: {
-            id,
-
-            clientEmail: email,
-          },
-        });
-
-      if (!reservation) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Réservation introuvable.",
-        });
-      }
-
-      if (
-        reservation.status !==
-        "pending"
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Cette réservation ne peut plus être annulée.",
-        });
-      }
-
-      await prisma.reservation.update({
-        where: {
-          id,
-        },
-
-        data: {
-          status:
-            "cancelled",
-        },
-      });
-
-      return res.json({
-        success: true,
-
-        message:
-          "Réservation annulée.",
-      });
-    } catch (error) {
-      console.error(
-        "Erreur annulation :",
-        error
-      );
-
-      return res.status(500).json({
-        success: false,
-        message:
-          "Impossible d'annuler la réservation.",
+          "Erreur serveur.",
       });
     }
   }
@@ -387,7 +270,35 @@ router.put(
       const id =
         Number(req.params.id);
 
+      if (
+        !Number.isInteger(id)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Réservation invalide.",
+        });
+      }
+
+
       const reservation =
+        await prisma.reservation.findUnique({
+          where: {
+            id,
+          },
+        });
+
+
+      if (!reservation) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Réservation introuvable.",
+        });
+      }
+
+
+      const updatedReservation =
         await prisma.reservation.update({
           where: {
             id,
@@ -398,6 +309,7 @@ router.put(
               "accepted",
           },
         });
+
 
       await prisma.employee.update({
         where: {
@@ -414,18 +326,23 @@ router.put(
         },
       });
 
-      res.json({
+
+      return res.json({
         success: true,
+
         message:
           "Réservation acceptée.",
+
+        reservation:
+          updatedReservation,
       });
     } catch (error) {
       console.error(
-        "Erreur acceptation :",
+        "Erreur acceptation réservation :",
         error
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message:
           "Erreur serveur.",
@@ -447,29 +364,91 @@ router.put(
       const id =
         Number(req.params.id);
 
-      await prisma.reservation.update({
-        where: {
-          id,
-        },
+      if (
+        !Number.isInteger(id)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Réservation invalide.",
+        });
+      }
 
-        data: {
-          status:
-            "rejected",
-        },
-      });
 
-      res.json({
+      const reservation =
+        await prisma.reservation.findUnique({
+          where: {
+            id,
+          },
+
+          include: {
+            employee: true,
+          },
+        });
+
+
+      if (!reservation) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Réservation introuvable.",
+        });
+      }
+
+
+      const updatedReservation =
+        await prisma.reservation.update({
+          where: {
+            id,
+          },
+
+          data: {
+            status:
+              "rejected",
+          },
+        });
+
+
+      // -----------------------------------------------------
+      // REMETTRE L'EMPLOYE DISPONIBLE
+      // -----------------------------------------------------
+
+      if (
+        reservation.employee
+      ) {
+        await prisma.employee.update({
+          where: {
+            id:
+              reservation.employeeId,
+          },
+
+          data: {
+            available:
+              true,
+
+            status:
+              "active",
+          },
+        });
+      }
+
+
+      return res.json({
         success: true,
+
         message:
           "Réservation refusée.",
+
+        reservation:
+          updatedReservation,
       });
     } catch (error) {
       console.error(
-        "Erreur refus :",
+        "Erreur refus réservation :",
         error
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message:
           "Erreur serveur.",
@@ -491,13 +470,42 @@ router.delete(
       const id =
         Number(req.params.id);
 
+      if (
+        !Number.isInteger(id)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Réservation invalide.",
+        });
+      }
+
+
+      const reservation =
+        await prisma.reservation.findUnique({
+          where: {
+            id,
+          },
+        });
+
+
+      if (!reservation) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Réservation introuvable.",
+        });
+      }
+
+
       await prisma.reservation.delete({
         where: {
           id,
         },
       });
 
-      res.json({
+
+      return res.json({
         success: true,
 
         message:
@@ -505,11 +513,11 @@ router.delete(
       });
     } catch (error) {
       console.error(
-        "Erreur suppression :",
+        "Erreur suppression réservation :",
         error
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message:
           "Erreur serveur.",
@@ -519,4 +527,5 @@ router.delete(
 );
 
 
-module.exports = router;
+module.exports =
+  router;

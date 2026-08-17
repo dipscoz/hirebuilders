@@ -7,45 +7,27 @@ import {
   useState,
 } from "react";
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
-
-
 type User = {
   id: number;
-
   firstName: string;
-
   lastName: string;
-
   email: string;
-
   phone?: string;
-
   role?: string;
 };
 
-
 type NotificationItem = {
   id: number;
-
   type: string;
-
   title: string;
-
   message: string;
-
   read: boolean;
-
   reservationId?: number | null;
-
   createdAt: string;
 };
 
 
 export default function Navbar() {
-
   const [user, setUser] =
     useState<User | null>(null);
 
@@ -89,22 +71,20 @@ export default function Navbar() {
     );
 
 
-  // ========================================================
-  // RECUPERATION DE LA SESSION
-  // ========================================================
+  // =========================================================
+  // SESSION
+  // =========================================================
 
   useEffect(() => {
-
     let mounted = true;
 
 
     async function loadUser() {
-
       try {
 
         const response =
           await fetch(
-            `${API}/api/auth/me`,
+            "/api/auth/me",
             {
               method: "GET",
 
@@ -120,16 +100,9 @@ export default function Navbar() {
         if (!response.ok) {
 
           if (mounted) {
-
             setUser(null);
-
-            setNotifications(
-              []
-            );
-
-            setUnreadCount(
-              0
-            );
+            setNotifications([]);
+            setUnreadCount(0);
           }
 
           return;
@@ -137,7 +110,11 @@ export default function Navbar() {
 
 
         const data =
-          await response.json();
+          await response
+            .json()
+            .catch(
+              () => null
+            );
 
 
         if (
@@ -151,7 +128,6 @@ export default function Navbar() {
           );
 
 
-          // Informations locales
           localStorage.setItem(
             "hirebuilders_user",
             JSON.stringify(
@@ -159,11 +135,13 @@ export default function Navbar() {
             )
           );
 
+
           localStorage.setItem(
             "hirebuilders_firstName",
             data.user.firstName ||
               ""
           );
+
 
           localStorage.setItem(
             "hirebuilders_lastName",
@@ -171,11 +149,13 @@ export default function Navbar() {
               ""
           );
 
+
           localStorage.setItem(
             "hirebuilders_email",
             data.user.email ||
               ""
           );
+
 
           localStorage.setItem(
             "hirebuilders_phone",
@@ -190,6 +170,7 @@ export default function Navbar() {
           "Erreur récupération session :",
           error
         );
+
 
         if (mounted) {
           setUser(null);
@@ -210,13 +191,12 @@ export default function Navbar() {
     return () => {
       mounted = false;
     };
-
   }, []);
 
 
-  // ========================================================
-  // CHARGER LES NOTIFICATIONS
-  // ========================================================
+  // =========================================================
+  // NOTIFICATIONS
+  // =========================================================
 
   async function loadNotifications(
     showLoading = false
@@ -238,7 +218,7 @@ export default function Navbar() {
 
       const response =
         await fetch(
-          `${API}/api/notifications`,
+          "/api/notifications",
           {
             method: "GET",
 
@@ -257,7 +237,6 @@ export default function Navbar() {
       ) {
 
         setNotifications([]);
-
         setUnreadCount(0);
 
         return;
@@ -292,14 +271,14 @@ export default function Navbar() {
 
       const count =
         Number(
-          data?.unreadCount ||
-          list.filter(
-            (
-              item: NotificationItem
-            ) =>
-              !item.read
-          ).length ||
-          0
+          data?.unreadCount ??
+            list.filter(
+              (
+                item: NotificationItem
+              ) =>
+                !item.read
+            ).length ??
+            0
         );
 
 
@@ -310,7 +289,7 @@ export default function Navbar() {
     } catch (error) {
 
       console.error(
-        "Erreur notifications Navbar :",
+        "Erreur notifications :",
         error
       );
 
@@ -322,10 +301,6 @@ export default function Navbar() {
     }
   }
 
-
-  // ========================================================
-  // NOTIFICATIONS : CHARGEMENT ET POLLING
-  // ========================================================
 
   useEffect(() => {
 
@@ -355,9 +330,9 @@ export default function Navbar() {
   }, [user]);
 
 
-  // ========================================================
-  // FERMER LES MENUS
-  // ========================================================
+  // =========================================================
+  // CLICK EXTERIEUR
+  // =========================================================
 
   useEffect(() => {
 
@@ -375,7 +350,6 @@ export default function Navbar() {
           target
         )
       ) {
-
         setMenuOpen(false);
       }
 
@@ -386,7 +360,6 @@ export default function Navbar() {
           target
         )
       ) {
-
         setNotificationOpen(
           false
         );
@@ -401,7 +374,6 @@ export default function Navbar() {
 
 
     return () => {
-
       document.removeEventListener(
         "mousedown",
         handleClickOutside
@@ -411,9 +383,9 @@ export default function Navbar() {
   }, []);
 
 
-  // ========================================================
+  // =========================================================
   // INITIALES
-  // ========================================================
+  // =========================================================
 
   function getInitials() {
 
@@ -442,9 +414,9 @@ export default function Navbar() {
   }
 
 
-  // ========================================================
-  // DATE
-  // ========================================================
+  // =========================================================
+  // DATE NOTIFICATION
+  // =========================================================
 
   function formatDate(
     value: string
@@ -467,20 +439,17 @@ export default function Navbar() {
       "fr-FR",
       {
         day: "2-digit",
-
         month: "short",
-
         hour: "2-digit",
-
         minute: "2-digit",
       }
     );
   }
 
 
-  // ========================================================
+  // =========================================================
   // TYPE NOTIFICATION
-  // ========================================================
+  // =========================================================
 
   function getNotificationClass(
     type: string
@@ -509,9 +478,9 @@ export default function Navbar() {
   }
 
 
-  // ========================================================
-  // OUVRIR NOTIFICATION
-  // ========================================================
+  // =========================================================
+  // OUVERTURE NOTIFICATION
+  // =========================================================
 
   async function openNotification(
     notification: NotificationItem
@@ -525,7 +494,7 @@ export default function Navbar() {
 
         const response =
           await fetch(
-            `${API}/api/notifications/${notification.id}/read`,
+            `/api/notifications/${notification.id}/read`,
             {
               method: "PUT",
 
@@ -568,7 +537,6 @@ export default function Navbar() {
       );
 
 
-      // Message d'une réservation
       if (
         notification.reservationId
       ) {
@@ -580,22 +548,17 @@ export default function Navbar() {
       }
 
 
-      // Candidature employé
       if (
         notification.type ===
-        "employee_application"
+          "employee_application" &&
+        user?.role ===
+          "admin"
       ) {
 
-        if (
-          user?.role ===
-          "admin"
-        ) {
+        window.location.href =
+          "/admin/employes";
 
-          window.location.href =
-            "/admin/employes";
-
-          return;
-        }
+        return;
       }
 
 
@@ -605,16 +568,16 @@ export default function Navbar() {
     } catch (error) {
 
       console.error(
-        "Erreur ouverture notification :",
+        "Erreur notification :",
         error
       );
     }
   }
 
 
-  // ========================================================
-  // TOUT MARQUER COMME LU
-  // ========================================================
+  // =========================================================
+  // TOUT LIRE
+  // =========================================================
 
   async function markAllNotificationsAsRead() {
 
@@ -622,7 +585,7 @@ export default function Navbar() {
 
       const response =
         await fetch(
-          `${API}/api/notifications/read-all`,
+          "/api/notifications/read-all",
           {
             method: "PUT",
 
@@ -660,16 +623,16 @@ export default function Navbar() {
   }
 
 
-  // ========================================================
+  // =========================================================
   // DECONNEXION
-  // ========================================================
+  // =========================================================
 
   async function handleLogout() {
 
     try {
 
       await fetch(
-        `${API}/api/auth/logout`,
+        "/api/auth/logout",
         {
           method: "POST",
 
@@ -739,10 +702,6 @@ export default function Navbar() {
 
       <div className="navContainer">
 
-        {/* =================================================
-            LOGO
-        ================================================= */}
-
         <Link
           href="/"
           className="brand"
@@ -756,8 +715,12 @@ export default function Navbar() {
           <div className="brandInfo">
 
             <div className="brandName">
-              Hire<span>Builders</span>
+              Hire
+              <span>
+                Builders
+              </span>
             </div>
+
 
             <div className="brandTagline">
               Plateforme BTP Sénégal
@@ -767,10 +730,6 @@ export default function Navbar() {
 
         </Link>
 
-
-        {/* =================================================
-            MENU
-        ================================================= */}
 
         <nav className="navLinks">
 
@@ -792,10 +751,6 @@ export default function Navbar() {
 
         </nav>
 
-
-        {/* =================================================
-            ACTIONS
-        ================================================= */}
 
         <div className="navActions">
 
@@ -824,10 +779,6 @@ export default function Navbar() {
             user && (
               <>
 
-                {/* =========================================
-                    NOTIFICATIONS
-                ========================================= */}
-
                 <div
                   className="notificationArea"
                   ref={
@@ -837,11 +788,13 @@ export default function Navbar() {
 
                   <button
                     type="button"
+
                     className={
                       notificationOpen
                         ? "notificationButton active"
                         : "notificationButton"
                     }
+
                     onClick={() => {
 
                       setNotificationOpen(
@@ -849,9 +802,7 @@ export default function Navbar() {
                           !value
                       );
 
-                      setMenuOpen(
-                        false
-                      );
+                      setMenuOpen(false);
 
 
                       if (
@@ -862,8 +813,8 @@ export default function Navbar() {
                           true
                         );
                       }
-
                     }}
+
                     aria-label="Notifications"
                   >
 
@@ -872,12 +823,15 @@ export default function Navbar() {
                     </span>
 
 
-                    {unreadCount > 0 && (
+                    {unreadCount >
+                      0 && (
                       <span className="notificationCount">
+
                         {unreadCount >
                         99
                           ? "99+"
                           : unreadCount}
+
                       </span>
                     )}
 
@@ -975,11 +929,13 @@ export default function Navbar() {
                                 key={
                                   notification.id
                                 }
+
                                 className={
                                   notification.read
                                     ? "notificationItem"
                                     : "notificationItem unread"
                                 }
+
                                 onClick={() =>
                                   openNotification(
                                     notification
@@ -1023,9 +979,10 @@ export default function Navbar() {
                                     </strong>
 
 
-                                    {!notification.read && (
-                                      <span className="unreadPoint" />
-                                    )}
+                                    {!notification.read &&
+                                      (
+                                        <span className="unreadPoint" />
+                                      )}
 
                                   </span>
 
@@ -1078,10 +1035,6 @@ export default function Navbar() {
                 </div>
 
 
-                {/* =========================================
-                    MENU COMPTE
-                ========================================= */}
-
                 <div
                   className="userArea"
                   ref={menuRef}
@@ -1089,7 +1042,9 @@ export default function Navbar() {
 
                   <button
                     type="button"
+
                     className="userButton"
+
                     onClick={() => {
 
                       setMenuOpen(
@@ -1100,7 +1055,6 @@ export default function Navbar() {
                       setNotificationOpen(
                         false
                       );
-
                     }}
                   >
 
@@ -1110,7 +1064,9 @@ export default function Navbar() {
 
 
                     <span className="userName">
-                      {user.firstName}
+                      {
+                        user.firstName
+                      }
                     </span>
 
 
@@ -1140,12 +1096,19 @@ export default function Navbar() {
                         <div className="menuUserInfo">
 
                           <strong>
-                            {user.firstName}{" "}
-                            {user.lastName}
+                            {
+                              user.firstName
+                            }{" "}
+                            {
+                              user.lastName
+                            }
                           </strong>
 
+
                           <span>
-                            {user.email}
+                            {
+                              user.email
+                            }
                           </span>
 
                         </div>
@@ -1191,7 +1154,9 @@ export default function Navbar() {
                         {unreadCount >
                           0 && (
                           <span className="menuCount">
-                            {unreadCount}
+                            {
+                              unreadCount
+                            }
                           </span>
                         )}
 
@@ -1215,10 +1180,6 @@ export default function Navbar() {
                       </Link>
 
 
-                      {/* ===================================
-                          POSTULER
-                      =================================== */}
-
                       {user.role !==
                         "admin" && (
                         <Link
@@ -1238,10 +1199,6 @@ export default function Navbar() {
                         </Link>
                       )}
 
-
-                      {/* ===================================
-                          ADMINISTRATION
-                      =================================== */}
 
                       {user.role ===
                         "admin" && (
@@ -1297,9 +1254,210 @@ export default function Navbar() {
 
       <style jsx>{`
 
-        /* =================================================
-           NOTIFICATIONS
-        ================================================= */
+        .navbar {
+          width: 100%;
+
+          position: sticky;
+
+          top: 0;
+
+          z-index: 200;
+
+          background:
+            rgba(
+              5,
+              11,
+              22,
+              0.96
+            );
+
+          border-bottom:
+            1px solid
+            rgba(
+              255,
+              255,
+              255,
+              0.08
+            );
+
+          backdrop-filter:
+            blur(16px);
+        }
+
+
+        .navContainer {
+          width:
+            min(
+              1400px,
+              calc(100% - 40px)
+            );
+
+          min-height: 82px;
+
+          margin:
+            auto;
+
+          display: flex;
+
+          align-items: center;
+
+          justify-content:
+            space-between;
+
+          gap: 20px;
+        }
+
+
+        .brand {
+          display: flex;
+
+          align-items: center;
+
+          gap: 11px;
+
+          color: white;
+
+          text-decoration: none;
+
+          flex-shrink: 0;
+        }
+
+
+        .brandLogo {
+          width: 46px;
+          height: 46px;
+
+          display: flex;
+
+          align-items: center;
+          justify-content: center;
+
+          border-radius: 13px;
+
+          background:
+            linear-gradient(
+              135deg,
+              #fbbf24,
+              #f59e0b
+            );
+
+          color:
+            #111827;
+
+          font-size: 18px;
+
+          font-weight: 900;
+        }
+
+
+        .brandName {
+          font-size: 20px;
+
+          font-weight: 900;
+        }
+
+
+        .brandName span {
+          color:
+            #fbbf24;
+        }
+
+
+        .brandTagline {
+          margin-top: 3px;
+
+          color:
+            #64748b;
+
+          font-size: 8px;
+        }
+
+
+        .navLinks {
+          display: flex;
+
+          align-items: center;
+
+          gap: 24px;
+
+          margin-left: auto;
+        }
+
+
+        .navLinks a {
+          color:
+            #cbd5e1;
+
+          text-decoration: none;
+
+          font-size: 11px;
+
+          font-weight: 700;
+        }
+
+
+        .navLinks a:hover {
+          color:
+            #fbbf24;
+        }
+
+
+        .navActions {
+          display: flex;
+
+          align-items: center;
+
+          gap: 9px;
+        }
+
+
+        .loginButton,
+        .registerButton {
+          height: 42px;
+
+          display: flex;
+
+          align-items: center;
+
+          justify-content:
+            center;
+
+          padding:
+            0 13px;
+
+          border-radius: 9px;
+
+          text-decoration: none;
+
+          font-size: 9px;
+
+          font-weight: 900;
+        }
+
+
+        .loginButton {
+          border:
+            1px solid
+            rgba(
+              255,
+              255,
+              255,
+              0.08
+            );
+
+          color:
+            #cbd5e1;
+        }
+
+
+        .registerButton {
+          background:
+            #fbbf24;
+
+          color:
+            #111827;
+        }
+
 
         .notificationArea {
           position: relative;
@@ -1319,42 +1477,53 @@ export default function Navbar() {
 
           border:
             1px solid
-            rgba(255,255,255,.10);
+            rgba(
+              255,
+              255,
+              255,
+              0.10
+            );
 
           border-radius: 12px;
 
           background:
-            rgba(255,255,255,.035);
+            rgba(
+              255,
+              255,
+              255,
+              0.035
+            );
 
-          color: white;
+          color:
+            white;
 
-          cursor: pointer;
-
-          transition:
-            border-color .2s ease,
-            background .2s ease,
-            transform .2s ease;
+          cursor:
+            pointer;
         }
 
 
         .notificationButton:hover,
         .notificationButton.active {
-
-          transform:
-            translateY(-1px);
-
           border-color:
-            rgba(251,191,36,.50);
+            rgba(
+              251,
+              191,
+              36,
+              0.50
+            );
 
           background:
-            rgba(251,191,36,.07);
+            rgba(
+              251,
+              191,
+              36,
+              0.07
+            );
         }
 
 
         .bell {
           font-size: 18px;
-
-          line-height: 1;
         }
 
 
@@ -1367,29 +1536,31 @@ export default function Navbar() {
           top: -5px;
           right: -5px;
 
-          padding:
-            0
-            4px;
-
           display: flex;
 
           align-items: center;
           justify-content: center;
 
+          padding:
+            0 4px;
+
           border:
             2px solid
             #050b16;
 
-          border-radius: 999px;
+          border-radius:
+            999px;
 
           background:
             #ef4444;
 
-          color: white;
+          color:
+            white;
 
           font-size: 7px;
 
-          font-weight: 900;
+          font-weight:
+            900;
         }
 
 
@@ -1407,43 +1578,29 @@ export default function Navbar() {
 
           border:
             1px solid
-            rgba(255,255,255,.09);
+            rgba(
+              255,
+              255,
+              255,
+              0.09
+            );
 
-          border-radius: 17px;
+          border-radius:
+            17px;
 
           background:
             #0d1726;
 
           box-shadow:
             0 25px 65px
-            rgba(0,0,0,.40);
+            rgba(
+              0,
+              0,
+              0,
+              0.40
+            );
 
           z-index: 3000;
-
-          animation:
-            panelAppear
-            .16s
-            ease-out;
-        }
-
-
-        @keyframes panelAppear {
-
-          from {
-            opacity: 0;
-
-            transform:
-              translateY(-6px)
-              scale(.98);
-          }
-
-          to {
-            opacity: 1;
-
-            transform:
-              translateY(0)
-              scale(1);
-          }
         }
 
 
@@ -1454,62 +1611,83 @@ export default function Navbar() {
             13px
             14px;
 
-          display: flex;
+          display:
+            flex;
 
-          align-items: center;
+          align-items:
+            center;
 
           justify-content:
             space-between;
-
-          gap: 10px;
         }
 
 
         .notificationPanelHeader strong {
           display: block;
 
-          color: white;
+          color:
+            white;
 
-          font-size: 13px;
+          font-size:
+            13px;
 
-          font-weight: 900;
+          font-weight:
+            900;
         }
 
 
         .notificationPanelHeader span {
           display: block;
 
-          margin-top: 3px;
+          margin-top:
+            3px;
 
-          color: #64748b;
+          color:
+            #64748b;
 
-          font-size: 8px;
+          font-size:
+            8px;
         }
 
 
         .readAllButton {
-          height: 30px;
+          height:
+            30px;
 
           padding:
-            0
-            9px;
+            0 9px;
 
           border:
             1px solid
-            rgba(251,191,36,.16);
+            rgba(
+              251,
+              191,
+              36,
+              0.16
+            );
 
-          border-radius: 8px;
+          border-radius:
+            8px;
 
           background:
-            rgba(251,191,36,.06);
+            rgba(
+              251,
+              191,
+              36,
+              0.06
+            );
 
-          color: #fbbf24;
+          color:
+            #fbbf24;
 
-          font-size: 7px;
+          font-size:
+            7px;
 
-          font-weight: 900;
+          font-weight:
+            900;
 
-          cursor: pointer;
+          cursor:
+            pointer;
         }
 
 
@@ -1518,7 +1696,12 @@ export default function Navbar() {
           height: 1px;
 
           background:
-            rgba(255,255,255,.07);
+            rgba(
+              255,
+              255,
+              255,
+              0.07
+            );
         }
 
 
@@ -1532,45 +1715,50 @@ export default function Navbar() {
         .notificationItem {
           width: 100%;
 
-          display: flex;
+          display:
+            flex;
 
-          align-items: flex-start;
-
-          gap: 10px;
+          gap:
+            10px;
 
           padding:
-            12px
-            14px;
+            12px 14px;
 
-          border: none;
+          border:
+            none;
 
           border-bottom:
             1px solid
-            rgba(255,255,255,.045);
+            rgba(
+              255,
+              255,
+              255,
+              0.045
+            );
 
           background:
             transparent;
 
-          color: white;
+          color:
+            white;
 
-          text-align: left;
+          text-align:
+            left;
 
-          cursor: pointer;
-
-          transition:
-            background .18s ease;
+          cursor:
+            pointer;
         }
 
 
-        .notificationItem:hover {
-          background:
-            rgba(251,191,36,.05);
-        }
-
-
+        .notificationItem:hover,
         .notificationItem.unread {
           background:
-            rgba(251,191,36,.035);
+            rgba(
+              251,
+              191,
+              36,
+              0.04
+            );
         }
 
 
@@ -1580,109 +1768,140 @@ export default function Navbar() {
 
           flex-shrink: 0;
 
-          display: flex;
+          display:
+            flex;
 
-          align-items: center;
-          justify-content: center;
+          align-items:
+            center;
 
-          border-radius: 9px;
+          justify-content:
+            center;
 
-          font-size: 6px;
+          border-radius:
+            9px;
 
-          font-weight: 900;
-        }
+          font-size:
+            6px;
 
-
-        .notificationItemIcon.new {
-          background:
-            rgba(251,191,36,.09);
-
-          color: #fbbf24;
+          font-weight:
+            900;
         }
 
 
         .notificationItemIcon.accepted {
           background:
-            rgba(34,197,94,.09);
+            rgba(
+              34,
+              197,
+              94,
+              0.09
+            );
 
-          color: #4ade80;
+          color:
+            #4ade80;
         }
 
 
         .notificationItemIcon.rejected {
           background:
-            rgba(239,68,68,.09);
+            rgba(
+              239,
+              68,
+              68,
+              0.09
+            );
 
-          color: #f87171;
-        }
-
-
-        .notificationItemIcon.cancelled {
-          background:
-            rgba(148,163,184,.08);
-
-          color: #94a3b8;
+          color:
+            #f87171;
         }
 
 
         .notificationItemIcon.message {
           background:
-            rgba(96,165,250,.09);
+            rgba(
+              96,
+              165,
+              250,
+              0.09
+            );
 
-          color: #93c5fd;
+          color:
+            #93c5fd;
         }
 
 
         .notificationItemIcon.application {
           background:
-            rgba(168,85,247,.10);
+            rgba(
+              168,
+              85,
+              247,
+              0.10
+            );
 
-          color: #c084fc;
+          color:
+            #c084fc;
+        }
+
+
+        .notificationItemIcon.new {
+          background:
+            rgba(
+              251,
+              191,
+              36,
+              0.09
+            );
+
+          color:
+            #fbbf24;
         }
 
 
         .notificationItemContent {
-          min-width: 0;
-
-          display: block;
+          min-width:
+            0;
 
           flex: 1;
         }
 
 
         .notificationItemTop {
-          display: flex;
+          display:
+            flex;
 
-          align-items: center;
+          align-items:
+            center;
 
-          gap: 6px;
+          gap:
+            6px;
         }
 
 
         .notificationItemTop strong {
-          overflow: hidden;
+          overflow:
+            hidden;
 
-          text-overflow: ellipsis;
+          text-overflow:
+            ellipsis;
 
-          white-space: nowrap;
+          white-space:
+            nowrap;
 
-          color: #f8fafc;
-
-          font-size: 9px;
-
-          font-weight: 900;
+          font-size:
+            9px;
         }
 
 
         .unreadPoint {
-          width: 6px !important;
-          height: 6px !important;
+          width: 6px;
+          height: 6px;
 
-          flex-shrink: 0;
+          flex-shrink:
+            0;
 
-          margin: 0 !important;
-
-          border-radius: 50%;
+          border-radius:
+            50%;
 
           background:
             #ef4444;
@@ -1690,87 +1909,104 @@ export default function Navbar() {
 
 
         .notificationItemMessage {
-          display: block;
+          display:
+            block;
 
-          margin-top: 4px;
+          margin-top:
+            4px;
 
-          overflow: hidden;
+          color:
+            #64748b;
 
-          display: -webkit-box;
+          font-size:
+            8px;
 
-          -webkit-line-clamp: 2;
-
-          -webkit-box-orient: vertical;
-
-          color: #64748b;
-
-          font-size: 8px;
-
-          line-height: 1.5;
+          line-height:
+            1.5;
         }
 
 
         .notificationItemDate {
-          display: block;
+          display:
+            block;
 
-          margin-top: 5px;
+          margin-top:
+            5px;
 
-          color: #475569;
+          color:
+            #475569;
 
-          font-size: 6px;
+          font-size:
+            6px;
         }
 
 
         .notificationState {
-          min-height: 170px;
+          min-height:
+            170px;
 
-          padding: 25px;
+          display:
+            flex;
 
-          display: flex;
+          flex-direction:
+            column;
 
-          flex-direction: column;
+          align-items:
+            center;
 
-          align-items: center;
+          justify-content:
+            center;
 
-          justify-content: center;
-
-          gap: 7px;
-
-          text-align: center;
+          gap:
+            7px;
         }
 
 
         .notificationState span {
-          color: #64748b;
+          color:
+            #64748b;
 
-          font-size: 8px;
+          font-size:
+            8px;
         }
 
 
         .notificationState strong {
-          color: white;
+          color:
+            white;
 
-          font-size: 10px;
+          font-size:
+            10px;
         }
 
 
         .emptyBell {
-          font-size: 25px;
+          font-size:
+            25px;
         }
 
 
         .smallSpinner {
-          width: 24px;
-          height: 24px;
+          width:
+            24px;
+
+          height:
+            24px;
 
           border:
             2px solid
-            rgba(255,255,255,.08);
+            rgba(
+              255,
+              255,
+              255,
+              0.08
+            );
 
           border-top-color:
             #fbbf24;
 
-          border-radius: 50%;
+          border-radius:
+            50%;
 
           animation:
             spin
@@ -1781,86 +2017,96 @@ export default function Navbar() {
 
 
         .allNotifications {
-          min-height: 45px;
+          min-height:
+            45px;
 
-          display: flex;
+          display:
+            flex;
 
-          align-items: center;
+          align-items:
+            center;
 
-          justify-content: center;
+          justify-content:
+            center;
 
-          color: #fbbf24;
+          color:
+            #fbbf24;
 
-          text-decoration: none;
+          text-decoration:
+            none;
 
-          font-size: 8px;
+          font-size:
+            8px;
 
-          font-weight: 900;
+          font-weight:
+            900;
         }
 
 
-        /* =================================================
-           COMPTE
-        ================================================= */
-
         .userArea {
-          position: relative;
+          position:
+            relative;
         }
 
 
         .userButton {
-          height: 48px;
+          height:
+            48px;
 
-          display: flex;
+          display:
+            flex;
 
-          align-items: center;
+          align-items:
+            center;
 
-          gap: 9px;
+          gap:
+            9px;
 
           padding:
-            4px
-            12px
-            4px
-            4px;
+            4px 12px
+            4px 4px;
 
           border:
             1px solid
-            rgba(255,255,255,.10);
+            rgba(
+              255,
+              255,
+              255,
+              0.10
+            );
 
-          border-radius: 13px;
+          border-radius:
+            13px;
 
           background:
-            rgba(255,255,255,.04);
+            rgba(
+              255,
+              255,
+              255,
+              0.04
+            );
 
-          color: white;
+          color:
+            white;
 
-          cursor: pointer;
-
-          transition:
-            border-color .2s ease,
-            background .2s ease;
+          cursor:
+            pointer;
         }
 
 
-        .userButton:hover {
-          border-color:
-            rgba(251,191,36,.50);
+        .userInitials,
+        .menuInitials {
+          display:
+            flex;
 
-          background:
-            rgba(251,191,36,.06);
-        }
+          align-items:
+            center;
 
+          justify-content:
+            center;
 
-        .userInitials {
-          width: 40px;
-          height: 40px;
-
-          display: flex;
-
-          align-items: center;
-          justify-content: center;
-
-          border-radius: 11px;
+          border-radius:
+            11px;
 
           background:
             linear-gradient(
@@ -1869,38 +2115,50 @@ export default function Navbar() {
               #f59e0b
             );
 
-          color: #111827;
+          color:
+            #111827;
 
-          font-size: 13px;
+          font-weight:
+            900;
+        }
 
-          font-weight: 900;
+
+        .userInitials {
+          width:
+            40px;
+
+          height:
+            40px;
+
+          font-size:
+            13px;
         }
 
 
         .userName {
-          max-width: 120px;
+          max-width:
+            120px;
 
-          overflow: hidden;
+          overflow:
+            hidden;
 
-          text-overflow: ellipsis;
+          text-overflow:
+            ellipsis;
 
-          white-space: nowrap;
+          white-space:
+            nowrap;
 
-          color: #f8fafc;
+          font-size:
+            13px;
 
-          font-size: 13px;
-
-          font-weight: 700;
+          font-weight:
+            700;
         }
 
 
         .chevron {
-          color: #94a3b8;
-
-          font-size: 15px;
-
-          transition:
-            transform .2s ease;
+          color:
+            #94a3b8;
         }
 
 
@@ -1910,137 +2168,126 @@ export default function Navbar() {
         }
 
 
-        /* =================================================
-           MENU
-        ================================================= */
-
         .userMenu {
-          position: absolute;
+          position:
+            absolute;
 
           top:
-            calc(100% + 10px);
+            calc(
+              100% + 10px
+            );
 
-          right: 0;
+          right:
+            0;
 
-          width: 290px;
+          width:
+            290px;
 
-          padding: 10px;
+          padding:
+            10px;
 
           border:
             1px solid
-            rgba(255,255,255,.08);
+            rgba(
+              255,
+              255,
+              255,
+              0.08
+            );
 
-          border-radius: 17px;
+          border-radius:
+            17px;
 
           background:
             #0d1726;
 
           box-shadow:
             0 25px 60px
-            rgba(0,0,0,.35);
+            rgba(
+              0,
+              0,
+              0,
+              0.35
+            );
 
-          z-index: 3000;
-
-          animation:
-            menuAppear
-            .16s
-            ease-out;
-        }
-
-
-        @keyframes menuAppear {
-
-          from {
-            opacity: 0;
-
-            transform:
-              translateY(-5px)
-              scale(.98);
-          }
-
-          to {
-            opacity: 1;
-
-            transform:
-              translateY(0)
-              scale(1);
-          }
+          z-index:
+            3000;
         }
 
 
         .userMenuHeader {
-          display: flex;
+          display:
+            flex;
 
-          align-items: center;
+          align-items:
+            center;
 
-          gap: 11px;
+          gap:
+            11px;
 
-          padding: 8px;
+          padding:
+            8px;
         }
 
 
         .menuInitials {
-          width: 42px;
-          height: 42px;
+          width:
+            42px;
 
-          flex-shrink: 0;
+          height:
+            42px;
 
-          display: flex;
+          flex-shrink:
+            0;
 
-          align-items: center;
-          justify-content: center;
-
-          border-radius: 12px;
-
-          background:
-            linear-gradient(
-              135deg,
-              #fbbf24,
-              #f59e0b
-            );
-
-          color: #111827;
-
-          font-size: 13px;
-
-          font-weight: 900;
+          font-size:
+            13px;
         }
 
 
         .menuUserInfo {
-          min-width: 0;
+          min-width:
+            0;
 
-          display: flex;
+          display:
+            flex;
 
-          flex-direction: column;
+          flex-direction:
+            column;
 
-          gap: 3px;
+          gap:
+            3px;
+        }
+
+
+        .menuUserInfo strong,
+        .menuUserInfo span {
+          overflow:
+            hidden;
+
+          text-overflow:
+            ellipsis;
+
+          white-space:
+            nowrap;
         }
 
 
         .menuUserInfo strong {
-          overflow: hidden;
+          color:
+            white;
 
-          text-overflow: ellipsis;
-
-          white-space: nowrap;
-
-          color: white;
-
-          font-size: 12px;
+          font-size:
+            12px;
         }
 
 
         .menuUserInfo span {
-          overflow: hidden;
+          color:
+            #64748b;
 
-          text-overflow: ellipsis;
-
-          white-space: nowrap;
-
-          color: #64748b;
-
-          font-size: 9px;
+          font-size:
+            9px;
         }
 
 
@@ -2049,150 +2296,175 @@ export default function Navbar() {
           height: 1px;
 
           margin:
-            7px
-            0;
+            7px 0;
 
           background:
-            rgba(255,255,255,.07);
+            rgba(
+              255,
+              255,
+              255,
+              0.07
+            );
         }
 
 
         .menuItem,
         .logoutButton {
-          width: 100%;
+          width:
+            100%;
 
-          display: flex;
+          display:
+            flex;
 
-          align-items: center;
+          align-items:
+            center;
 
-          gap: 10px;
-
-          padding:
-            11px
+          gap:
             10px;
 
-          border-radius: 9px;
+          padding:
+            11px 10px;
 
-          border: none;
+          border:
+            none;
+
+          border-radius:
+            9px;
 
           background:
             transparent;
 
-          color: #cbd5e1;
+          color:
+            #cbd5e1;
 
-          text-decoration: none;
+          text-decoration:
+            none;
 
-          text-align: left;
+          text-align:
+            left;
 
           font-family:
             inherit;
 
-          font-size: 11px;
+          font-size:
+            11px;
 
-          font-weight: 600;
+          font-weight:
+            600;
 
-          cursor: pointer;
-
-          transition:
-            background .18s ease,
-            color .18s ease;
+          cursor:
+            pointer;
         }
 
 
         .menuItem:hover {
           background:
-            rgba(245,158,11,.08);
+            rgba(
+              245,
+              158,
+              11,
+              0.08
+            );
 
-          color: #fbbf24;
+          color:
+            #fbbf24;
         }
 
 
-        .applicationItem {
-          color: #fbbf24;
-        }
-
-
+        .applicationItem,
         .adminItem {
-          color: #fbbf24;
+          color:
+            #fbbf24;
         }
 
 
         .logoutButton {
-          color: #fca5a5;
+          color:
+            #fca5a5;
         }
 
 
         .logoutButton:hover {
           background:
-            rgba(239,68,68,.08);
+            rgba(
+              239,
+              68,
+              68,
+              0.08
+            );
 
-          color: #f87171;
+          color:
+            #f87171;
         }
 
 
         .menuItem > span:first-child,
         .logoutButton > span:first-child {
-          width: 20px;
+          width:
+            20px;
 
-          flex-shrink: 0;
-
-          text-align: center;
+          text-align:
+            center;
         }
 
 
         .menuCount {
-          width: auto !important;
+          width:
+            auto;
 
-          min-width: 18px;
+          min-width:
+            18px;
 
-          height: 18px;
+          height:
+            18px;
 
-          margin-left: auto;
+          margin-left:
+            auto;
+
+          display:
+            flex;
+
+          align-items:
+            center;
+
+          justify-content:
+            center;
 
           padding:
-            0
-            5px;
+            0 5px;
 
-          display: flex !important;
-
-          align-items: center;
-
-          justify-content: center;
-
-          border-radius: 999px;
+          border-radius:
+            999px;
 
           background:
             #ef4444;
 
-          color: white !important;
+          color:
+            white;
 
-          font-size: 7px;
+          font-size:
+            7px;
 
-          font-weight: 900;
+          font-weight:
+            900;
         }
 
 
-        /* =================================================
-           MOBILE
-        ================================================= */
-
-        @media (max-width: 800px) {
+        @media (
+          max-width: 800px
+        ) {
 
           .navLinks,
           .userName,
           .chevron {
-            display: none;
+            display:
+              none;
           }
 
 
           .userButton {
-            padding: 4px;
-          }
-
-
-          .notificationButton {
-            width: 42px;
-            height: 42px;
+            padding:
+              4px;
           }
 
 
@@ -2200,34 +2472,37 @@ export default function Navbar() {
             width:
               min(
                 350px,
-                calc(100vw - 30px)
+                calc(
+                  100vw -
+                  30px
+                )
               );
 
-            right: -45px;
+            right:
+              -45px;
           }
         }
 
 
-        @media (max-width: 600px) {
+        @media (
+          max-width: 600px
+        ) {
 
           .brandTagline {
-            display: none;
+            display:
+              none;
           }
 
 
           .brandName {
-            font-size: 17px;
-          }
-
-
-          .brandLogo {
-            width: 42px;
-            height: 42px;
+            font-size:
+              17px;
           }
 
 
           .notificationPanel {
-            right: -60px;
+            right:
+              -60px;
           }
         }
 
@@ -2241,7 +2516,6 @@ export default function Navbar() {
         }
 
       `}</style>
-
     </header>
   );
 }
