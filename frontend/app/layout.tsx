@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: {
     default:
       "HireBuilders — Professionnels du BTP au Sénégal",
+
     template:
       "%s | HireBuilders",
   },
@@ -55,8 +56,10 @@ export const metadata: Metadata = {
       follow: true,
       "max-image-preview":
         "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
+      "max-snippet":
+        -1,
+      "max-video-preview":
+        -1,
     },
   },
 
@@ -73,7 +76,8 @@ export const metadata: Metadata = {
       },
 
       {
-        url: "/favicon-96x96.png",
+        url:
+          "/favicon-96x96.png",
         sizes: "96x96",
         type: "image/png",
       },
@@ -86,9 +90,7 @@ export const metadata: Metadata = {
       {
         url:
           "/apple-touch-icon.png",
-
         sizes: "180x180",
-
         type: "image/png",
       },
     ],
@@ -97,9 +99,11 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
 
-    locale: "fr_SN",
+    locale:
+      "fr_SN",
 
-    url: BASE_URL,
+    url:
+      BASE_URL,
 
     siteName:
       "HireBuilders",
@@ -109,7 +113,6 @@ export const metadata: Metadata = {
 
     description:
       "Trouvez et réservez des professionnels du BTP au Sénégal avec HireBuilders.",
-
   },
 
   twitter: {
@@ -127,7 +130,8 @@ export const metadata: Metadata = {
     title:
       "HireBuilders",
 
-    capable: true,
+    capable:
+      true,
 
     statusBarStyle:
       "black-translucent",
@@ -138,7 +142,8 @@ export const viewport: Viewport = {
   width:
     "device-width",
 
-  initialScale: 1,
+  initialScale:
+    1,
 
   themeColor:
     "#f59e0b",
@@ -155,6 +160,43 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
+      <head>
+
+        {/* ================================================
+            GOOGLE SEARCH CONSOLE
+        ================================================= */}
+
+        <meta
+          name="google-site-verification"
+          content="dRCaede5F4DeFHK7Jfn-QqDUqbuW5cQYtygZZq5oMhI"
+        />
+
+        {/* ================================================
+            PWA / MOBILE
+        ================================================= */}
+
+        <meta
+          name="mobile-web-app-capable"
+          content="yes"
+        />
+
+        <meta
+          name="apple-mobile-web-app-capable"
+          content="yes"
+        />
+
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+
+        <meta
+          name="apple-mobile-web-app-title"
+          content="HireBuilders"
+        />
+
+      </head>
+
       <body>
         {children}
       </body>
