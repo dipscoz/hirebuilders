@@ -5,10 +5,36 @@ import type {
   Viewport,
 } from "next";
 
+const BASE_URL =
+  "https://hirebuilders-tn8k.vercel.app";
+
 export const metadata: Metadata = {
-  title: "HireBuilders",
+  metadataBase:
+    new URL(BASE_URL),
+
+  title: {
+    default:
+      "HireBuilders — Professionnels du BTP au Sénégal",
+    template:
+      "%s | HireBuilders",
+  },
+
   description:
-    "Plateforme de mise en relation avec des professionnels du BTP au Sénégal.",
+    "HireBuilders met en relation les clients avec des professionnels du BTP au Sénégal. Trouvez un employé, découvrez les métiers et réservez un professionnel adapté à votre projet.",
+
+  keywords: [
+    "HireBuilders",
+    "BTP Sénégal",
+    "professionnels BTP Sénégal",
+    "employés BTP Sénégal",
+    "location employés Sénégal",
+    "ouvriers Sénégal",
+    "maçons Sénégal",
+    "électriciens Sénégal",
+    "plombiers Sénégal",
+    "construction Sénégal",
+    "Dakar BTP",
+  ],
 
   applicationName:
     "HireBuilders",
@@ -16,16 +42,36 @@ export const metadata: Metadata = {
   manifest:
     "/site.webmanifest",
 
+  alternates: {
+    canonical: "/",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview":
+        "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+
   icons: {
     icon: [
       {
         url: "/favicon.ico",
         type: "image/x-icon",
       },
+
       {
         url: "/favicon.svg",
         type: "image/svg+xml",
       },
+
       {
         url: "/favicon-96x96.png",
         sizes: "96x96",
@@ -48,6 +94,35 @@ export const metadata: Metadata = {
     ],
   },
 
+  openGraph: {
+    type: "website",
+
+    locale: "fr_SN",
+
+    url: BASE_URL,
+
+    siteName:
+      "HireBuilders",
+
+    title:
+      "HireBuilders — Professionnels du BTP au Sénégal",
+
+    description:
+      "Trouvez et réservez des professionnels du BTP au Sénégal avec HireBuilders.",
+
+  },
+
+  twitter: {
+    card:
+      "summary_large_image",
+
+    title:
+      "HireBuilders — Professionnels du BTP au Sénégal",
+
+    description:
+      "Trouvez et réservez des professionnels du BTP au Sénégal avec HireBuilders.",
+  },
+
   appleWebApp: {
     title:
       "HireBuilders",
@@ -65,8 +140,6 @@ export const viewport: Viewport = {
 
   initialScale: 1,
 
-  maximumScale: 1,
-
   themeColor:
     "#f59e0b",
 
@@ -82,28 +155,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <head>
-        <meta
-          name="mobile-web-app-capable"
-          content="yes"
-        />
-
-        <meta
-          name="apple-mobile-web-app-capable"
-          content="yes"
-        />
-
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
-        />
-
-        <meta
-          name="apple-mobile-web-app-title"
-          content="HireBuilders"
-        />
-      </head>
-
       <body>
         {children}
       </body>
