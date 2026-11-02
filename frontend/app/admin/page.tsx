@@ -140,7 +140,7 @@ export default function AdminPage() {
 
             <p>
               Gérez les professionnels,
-              les réservations et l'activité
+              les réservations et l&apos;activité
               de votre plateforme.
             </p>
 
@@ -150,7 +150,7 @@ export default function AdminPage() {
           <div className="dateCard">
 
             <span>
-              Aujourd'hui
+              Aujourd&apos;hui
             </span>
 
             <strong>
@@ -225,7 +225,7 @@ export default function AdminPage() {
 
               <p>
                 Accédez rapidement aux
-                principales fonctions d'administration.
+                principales fonctions d&apos;administration.
               </p>
             </div>
 
@@ -415,8 +415,8 @@ export default function AdminPage() {
             </strong>
 
             <p>
-              Vous êtes connecté à l'espace
-              d'administration HireBuilders.
+              Vous êtes connecté à l&apos;espace
+              d&apos;administration HireBuilders.
             </p>
 
           </div>

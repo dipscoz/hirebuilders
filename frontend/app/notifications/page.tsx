@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type NotificationItem = {
@@ -14,9 +14,6 @@ type NotificationItem = {
   createdAt: string;
 };
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -45,9 +42,7 @@ export default function NotificationsPage() {
   // CHARGEMENT
   // =========================================================
 
-  async function loadNotifications(
-    silent = false
-  ) {
+  const loadNotifications = useCallback(async (silent = false) => {
     try {
       if (silent) {
         setRefreshing(true);
@@ -58,7 +53,7 @@ export default function NotificationsPage() {
       setError("");
 
       const response = await fetch(
-        `${API}/api/notifications`,
+        `/api/notifications`,
         {
           method: "GET",
           credentials: "include",
@@ -101,10 +96,10 @@ export default function NotificationsPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  }
+  }, [router]);
 
   useEffect(() => {
-    loadNotifications();
+    const initialLoad = window.setTimeout(() => void loadNotifications(), 0);
 
     const interval =
       window.setInterval(() => {
@@ -112,9 +107,10 @@ export default function NotificationsPage() {
       }, 30000);
 
     return () => {
+      window.clearTimeout(initialLoad);
       window.clearInterval(interval);
     };
-  }, []);
+  }, [loadNotifications]);
 
   // =========================================================
   // MARQUER UNE NOTIFICATION LUE
@@ -129,7 +125,7 @@ export default function NotificationsPage() {
 
     try {
       const response = await fetch(
-        `${API}/api/notifications/${notification.id}/read`,
+        `/api/notifications/${notification.id}/read`,
         {
           method: "PUT",
           credentials: "include",
@@ -165,7 +161,7 @@ export default function NotificationsPage() {
   async function markAllAsRead() {
     try {
       const response = await fetch(
-        `${API}/api/notifications/read-all`,
+        `/api/notifications/read-all`,
         {
           method: "PUT",
           credentials: "include",
@@ -199,7 +195,7 @@ export default function NotificationsPage() {
   ) {
     try {
       const response = await fetch(
-        `${API}/api/notifications/${id}`,
+        `/api/notifications/${id}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -328,7 +324,7 @@ export default function NotificationsPage() {
     }
 
     const diff =
-      Date.now() - date.getTime();
+      new Date().getTime() - date.getTime();
 
     const minute = 60 * 1000;
     const hour = 60 * minute;
@@ -476,7 +472,7 @@ export default function NotificationsPage() {
           href="/"
           className="back"
         >
-          ← Retour à l'accueil
+          ← Retour à l&apos;accueil
         </Link>
 
 

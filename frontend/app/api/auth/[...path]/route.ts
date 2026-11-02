@@ -4,8 +4,18 @@ import {
 } from "next/server";
 
 const BACKEND_URL =
-  process.env.BACKEND_URL ||
-  "http://localhost:5000";
+  (process.env.BACKEND_URL || "").trim().replace(/\/+$/, "") ||
+  (process.env.NODE_ENV !== "production" ? "http://localhost:5000" : "");
+
+const AUTH_ROUTES: Record<string, string[]> = {
+  register: ["POST"],
+  login: ["POST"],
+  google: ["GET"],
+  "google/callback": ["GET"],
+  me: ["GET"],
+  logout: ["POST"],
+  password: ["PUT"],
+};
 
 
 // =========================================================
@@ -24,8 +34,38 @@ async function proxyAuth(
     const { path } =
       await context.params;
 
-    const route =
-      path.join("/");
+    if (!Array.isArray(path) || path.length === 0 || path.some((segment) => !segment || segment === "." || segment === ".." || /[\\/]/.test(segment))) {
+      return NextResponse.json(
+        { success: false, message: "Route d'authentification introuvable." },
+        { status: 404, headers: { "Cache-Control": "no-store" } },
+      );
+    }
+
+    const route = path.join("/");
+
+    if (!AUTH_ROUTES[route]) {
+      return NextResponse.json(
+        { success: false, message: "Route d'authentification introuvable." },
+        { status: 404, headers: { "Cache-Control": "no-store" } },
+      );
+    }
+
+    if (!AUTH_ROUTES[route].includes(request.method)) {
+      return NextResponse.json(
+        { success: false, message: "Méthode non autorisée." },
+        { status: 405, headers: { "Cache-Control": "no-store" } },
+      );
+    }
+
+    if (!BACKEND_URL) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "BACKEND_URL n'est pas configuré sur Vercel.",
+        },
+        { status: 503, headers: { "Cache-Control": "no-store" } }
+      );
+    }
 
     const target =
       `${BACKEND_URL}/api/auth/${route}`;

@@ -2,11 +2,8 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 type Message = {
   id: number;
@@ -60,14 +57,14 @@ export default function ClientMessagesPage() {
   const [error, setError] =
     useState("");
 
-  async function loadConversation() {
+  const loadConversation = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
 
       const response =
         await fetch(
-          `${API}/api/messages/reservation/${reservationId}`,
+          `/api/messages/reservation/${reservationId}`,
           {
             method: "GET",
             credentials: "include",
@@ -105,7 +102,7 @@ export default function ClientMessagesPage() {
       );
 
       await fetch(
-        `${API}/api/messages/reservation/${reservationId}/read`,
+        `/api/messages/reservation/${reservationId}/read`,
         {
           method: "PUT",
           credentials: "include",
@@ -122,13 +119,14 @@ export default function ClientMessagesPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [reservationId, router]);
 
   useEffect(() => {
     if (reservationId) {
-      loadConversation();
+      const initialLoad = window.setTimeout(() => void loadConversation(), 0);
+      return () => window.clearTimeout(initialLoad);
     }
-  }, [reservationId]);
+  }, [loadConversation, reservationId]);
 
   async function sendMessage(
     event: FormEvent
@@ -148,7 +146,7 @@ export default function ClientMessagesPage() {
 
       const response =
         await fetch(
-          `${API}/api/messages/reservation/${reservationId}`,
+          `/api/messages/reservation/${reservationId}`,
           {
             method: "POST",
             credentials: "include",
@@ -263,7 +261,7 @@ export default function ClientMessagesPage() {
         ) : error && !reservation ? (
           <div className="state errorState">
             <h2>
-              Impossible d'ouvrir la conversation
+              Impossible d&apos;ouvrir la conversation
             </h2>
 
             <p>
@@ -329,8 +327,8 @@ export default function ClientMessagesPage() {
                 </strong>
 
                 <p>
-                  Le numéro de téléphone de l'employé
-                  n'est jamais affiché dans cette conversation.
+                  Le numéro de téléphone de l&apos;employé
+                  n&apos;est jamais affiché dans cette conversation.
                 </p>
               </div>
 

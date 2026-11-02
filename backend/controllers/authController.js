@@ -6,9 +6,7 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
-const JWT_SECRET =
-  process.env.JWT_SECRET ||
-  "hirebuilders-dev-secret";
+const JWT_SECRET = require("../config/jwt");
 
 const ADMIN_EMAILS = [
   "dipscoz@gmail.com",
@@ -24,6 +22,9 @@ const GOOGLE_CLIENT_ID =
 
 const GOOGLE_CLIENT_SECRET =
   process.env.GOOGLE_CLIENT_SECRET;
+
+const GOOGLE_HANDOFF_SECRET =
+  process.env.GOOGLE_HANDOFF_SECRET;
 
 const GOOGLE_REDIRECT_URI =
   process.env.GOOGLE_REDIRECT_URI ||
@@ -491,21 +492,41 @@ async function googleCallback(
         });
     }
 
-    const token =
-      createToken(user);
+    if (!GOOGLE_HANDOFF_SECRET) {
+      console.error("GOOGLE_HANDOFF_SECRET absent : transfert Google impossible.");
+      return res.redirect(
+        `${FRONTEND_URL}/connexion?error=google_config`
+      );
+    }
 
-    setAuthCookie(
-      res,
-      token
+    const handoffToken = jwt.sign(
+      {
+        type: "google_handoff",
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+      },
+      GOOGLE_HANDOFF_SECRET,
+      {
+        expiresIn: "5m",
+        issuer: "hirebuilders-backend",
+        audience: "hirebuilders-google-handoff",
+      }
     );
 
-    return res.redirect(
-      `${FRONTEND_URL}${
-        user.role === "admin"
-          ? "/admin"
-          : "/"
-      }`
+    const callbackUrl = new URL(
+      "/api/auth/google/callback",
+      FRONTEND_URL
     );
+    callbackUrl.searchParams.set("token", handoffToken);
+    callbackUrl.searchParams.set(
+      "redirect",
+      user.role === "admin" ? "/admin" : "/"
+    );
+
+    return res.redirect(callbackUrl.toString());
   } catch (error) {
     console.error(
       "Erreur callback Google :",
@@ -658,6 +679,29 @@ async function logout(
   });
 }
 
+async function changePassword(req, res) {
+  try {
+    const { currentPassword, newPassword } = req.body || {};
+    if (typeof currentPassword !== "string" || typeof newPassword !== "string") {
+      return res.status(400).json({ success: false, message: "Les mots de passe sont obligatoires." });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ success: false, message: "Le nouveau mot de passe doit contenir au moins 6 caractères." });
+    }
+    const user = await prisma.user.findUnique({ where: { id: Number(req.user.id) } });
+    if (!user) return res.status(404).json({ success: false, message: "Utilisateur introuvable." });
+    if (!(await bcrypt.compare(currentPassword, user.passwordHash))) {
+      return res.status(400).json({ success: false, message: "Le mot de passe actuel est incorrect." });
+    }
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+    return res.json({ success: true, message: "Mot de passe modifié avec succès." });
+  } catch (error) {
+    console.error("Erreur modification mot de passe :", error);
+    return res.status(500).json({ success: false, message: "Impossible de modifier le mot de passe." });
+  }
+}
+
 
 module.exports = {
   register,
@@ -666,4 +710,5 @@ module.exports = {
   googleCallback,
   me,
   logout,
+  changePassword,
 };

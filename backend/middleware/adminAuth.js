@@ -4,9 +4,7 @@ const jwt = require("jsonwebtoken");
 // CONFIGURATION
 // =========================================================
 
-const JWT_SECRET =
-  process.env.JWT_SECRET ||
-  "hirebuilders-dev-secret";
+const JWT_SECRET = require("../config/jwt");
 
 const ADMIN_EMAILS = [
   "dipscoz@gmail.com",
@@ -55,8 +53,14 @@ function isAdmin(user) {
 
 function adminAuth(req, res, next) {
   try {
+    const authorization = req.headers?.authorization;
+    const bearerToken =
+      typeof authorization === "string" && authorization.startsWith("Bearer ")
+        ? authorization.slice(7).trim()
+        : null;
+
     const token =
-      req.cookies?.hirebuilders_token;
+      bearerToken || req.cookies?.hirebuilders_token;
 
     // -------------------------------------------------------
     // PAS DE COOKIE

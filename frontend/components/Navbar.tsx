@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 import {
   useEffect,
   useRef,
@@ -28,6 +30,7 @@ type NotificationItem = {
 
 
 export default function Navbar() {
+  const router = useRouter();
   const [user, setUser] =
     useState<User | null>(null);
 
@@ -198,9 +201,7 @@ export default function Navbar() {
   // NOTIFICATIONS
   // =========================================================
 
-  async function loadNotifications(
-    showLoading = false
-  ) {
+  const loadNotifications = useCallback(async (showLoading = false) => {
 
     if (!user) {
       return;
@@ -299,7 +300,7 @@ export default function Navbar() {
         false
       );
     }
-  }
+  }, [user]);
 
 
   useEffect(() => {
@@ -309,13 +310,13 @@ export default function Navbar() {
     }
 
 
-    loadNotifications();
+    const initialLoad = window.setTimeout(() => void loadNotifications(), 0);
 
 
     const interval =
       window.setInterval(
         () => {
-          loadNotifications();
+          void loadNotifications();
         },
         30000
       );
@@ -325,9 +326,10 @@ export default function Navbar() {
       window.clearInterval(
         interval
       );
+      window.clearTimeout(initialLoad);
     };
 
-  }, [user]);
+  }, [user, loadNotifications]);
 
 
   // =========================================================
@@ -541,8 +543,7 @@ export default function Navbar() {
         notification.reservationId
       ) {
 
-        window.location.href =
-          `/reservations/${notification.reservationId}/messages`;
+        router.push(`/reservations/${notification.reservationId}/messages`);
 
         return;
       }
@@ -555,15 +556,13 @@ export default function Navbar() {
           "admin"
       ) {
 
-        window.location.href =
-          "/admin/employes";
+        router.push("/admin/employes");
 
         return;
       }
 
 
-      window.location.href =
-        "/notifications";
+      router.push("/notifications");
 
     } catch (error) {
 

@@ -14,9 +14,6 @@ type Employee = {
   status?: string;
 };
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 export default function EmployeeProfilePage() {
   const params = useParams();
@@ -43,7 +40,7 @@ export default function EmployeeProfilePage() {
         setError("");
 
         const response = await fetch(
-          `${API}/api/employees/${id}`,
+          `/api/employees/${id}`,
           {
             method: "GET",
             cache: "no-store",

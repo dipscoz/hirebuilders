@@ -113,7 +113,7 @@ export default function InstallButton() {
         userAgent
       );
 
-    setIsIOS(ios);
+    const iosTimer = window.setTimeout(() => setIsIOS(ios), 0);
 
 
     // -------------------------------------------------------
@@ -163,6 +163,7 @@ export default function InstallButton() {
 
 
     return () => {
+      window.clearTimeout(iosTimer);
       window.removeEventListener(
         "beforeinstallprompt",
         handleBeforeInstallPrompt

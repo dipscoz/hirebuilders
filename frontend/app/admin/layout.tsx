@@ -1,162 +1,44 @@
 "use client";
 
-import {
-  ReactNode,
-  useEffect,
-  useState,
-} from "react";
-
+import { useEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
-type User = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  role?: string;
-};
+type AdminLayoutProps = { children: ReactNode };
 
-const ADMIN_EMAILS = [
-  "dipscoz@gmail.com",
-  "ndeyebirametall50@gmail.com",
-];
-
-function isAdmin(
-  user: User | null
-) {
-  if (!user) {
-    return false;
-  }
-
-  const email =
-    String(user.email || "")
-      .trim()
-      .toLowerCase();
-
-  const role =
-    String(user.role || "")
-      .trim()
-      .toLowerCase();
-
-  return (
-    role === "admin" ||
-    ADMIN_EMAILS.includes(email)
-  );
-}
-
-export default function AdminLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const pathname =
-    usePathname();
-
-  const [checking, setChecking] =
-    useState(true);
-
-  const [authorized, setAuthorized] =
-    useState(false);
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  const pathname = usePathname();
+  const isLoginPage = pathname === "/admin/login";
+  const [verifiedPath, setVerifiedPath] = useState<string | null>(isLoginPage ? pathname : null);
 
   useEffect(() => {
-    let mounted = true;
-
-    async function verify() {
-      try {
-        const response =
-          await fetch(
-            "/api/auth/me",
-            {
-              method: "GET",
-              credentials:
-                "include",
-              cache:
-                "no-store",
-            }
-          );
-
-        const data =
-          await response
-            .json()
-            .catch(
-              () => null
-            );
-
-        if (!response.ok) {
-          window.location.replace(
-            `/connexion?redirect=${encodeURIComponent(
-              pathname || "/admin"
-            )}`
-          );
-          return;
-        }
-
-        const user =
-          data?.success &&
-          data?.user
-            ? data.user
-            : null;
-
-        if (!isAdmin(user)) {
-          window.location.replace(
-            "/"
-          );
-          return;
-        }
-
-        if (mounted) {
-          setAuthorized(true);
-          setChecking(false);
-        }
-      } catch (error) {
-        console.error(
-          "Erreur vérification admin :",
-          error
-        );
-
-        window.location.replace(
-          "/connexion"
-        );
-      }
+    if (isLoginPage) {
+      return;
     }
 
-    verify();
+    let active = true;
+
+    void fetch("/api/auth/me", { credentials: "include", cache: "no-store" })
+      .then(async (response) => {
+        const data = await response.json().catch(() => null);
+        if (!response.ok || data?.user?.role !== "admin") {
+          window.location.replace("/admin/login");
+          return;
+        }
+        if (active) setVerifiedPath(pathname);
+      })
+      .catch((error) => {
+        console.error("Échec de vérification de la session administrateur :", error);
+        window.location.replace("/admin/login");
+      });
 
     return () => {
-      mounted = false;
+      active = false;
     };
-  }, [pathname]);
+  }, [isLoginPage, pathname]);
 
-  if (checking) {
-    return (
-      <div
-        style={{
-          minHeight:
-            "100vh",
-          display:
-            "flex",
-          alignItems:
-            "center",
-          justifyContent:
-            "center",
-          background:
-            "#050b16",
-          color:
-            "#fbbf24",
-          fontFamily:
-            "Arial, sans-serif",
-          fontWeight:
-            800,
-        }}
-      >
-        Vérification des autorisations...
-      </div>
-    );
-  }
-
-  if (!authorized) {
-    return null;
+  if (isLoginPage) return <>{children}</>;
+  if (verifiedPath !== pathname) {
+    return <main role="status" aria-live="polite" style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>Vérification de la session administrateur…</main>;
   }
 
   return <>{children}</>;

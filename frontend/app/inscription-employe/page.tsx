@@ -3,9 +3,6 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 export default function InscriptionEmployePage() {
   const [firstName, setFirstName] = useState("");
@@ -146,7 +143,7 @@ export default function InscriptionEmployePage() {
       setLoading(true);
 
       const response = await fetch(
-        `${API}/api/auth/register`,
+        `/api/auth/register`,
         {
           method: "POST",
 
@@ -1118,7 +1115,7 @@ export default function InscriptionEmployePage() {
               href="/"
               className="back"
             >
-              ← Retour à l'accueil
+              ← Retour à l&apos;accueil
             </Link>
 
           </div>
@@ -1485,8 +1482,8 @@ export default function InscriptionEmployePage() {
                 />
 
                 <span>
-                  J'accepte les conditions
-                  d'utilisation de HireBuilders.
+                  J&apos;accepte les conditions
+                  d&apos;utilisation de HireBuilders.
                 </span>
 
               </label>

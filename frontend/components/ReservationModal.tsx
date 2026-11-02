@@ -5,7 +5,7 @@ import { useState } from "react";
 type Props = {
   open: boolean;
   onClose: () => void;
-  employee: any;
+  employee: { nom?: string; metier?: string; ville?: string } | null;
 };
 
 export default function ReservationModal({

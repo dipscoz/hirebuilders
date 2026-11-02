@@ -4,9 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 export default function AjouterEmploye() {
   const router = useRouter();
@@ -52,7 +49,7 @@ export default function AjouterEmploye() {
       setLoading(true);
 
       const response = await fetch(
-        `${API}/api/employees`,
+        `/api/employees`,
         {
           method: "POST",
 
@@ -253,7 +250,7 @@ export default function AjouterEmploye() {
 
                 <p>
                   Renseignez les informations
-                  principales de l'employé.
+                  principales de l&apos;employé.
                 </p>
 
               </div>
@@ -472,7 +469,7 @@ export default function AjouterEmploye() {
                   </>
                 ) : (
                   <>
-                    Créer l'employé
+                    Créer l&apos;employé
                     <span>→</span>
                   </>
                 )}

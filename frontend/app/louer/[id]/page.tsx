@@ -1,12 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 export default function LouerEmploye() {
   const params = useParams();
@@ -16,6 +13,7 @@ export default function LouerEmploye() {
 
   const [form, setForm] = useState({
     clientName: "",
+    clientEmail: "",
     phone: "",
     startDate: "",
     endDate: "",
@@ -24,6 +22,22 @@ export default function LouerEmploye() {
 
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    void fetch("/api/auth/me", { credentials: "include", cache: "no-store" })
+      .then((response) => response.json().catch(() => null))
+      .then((data) => {
+        const email = data?.user?.email;
+        if (active && typeof email === "string") {
+          setForm((current) => current.clientEmail ? current : { ...current, clientEmail: email });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   function handleChange(
     event: React.ChangeEvent<
@@ -43,6 +57,7 @@ export default function LouerEmploye() {
 
     if (
       !form.clientName.trim() ||
+      !form.clientEmail.trim() ||
       !form.phone.trim() ||
       !form.startDate ||
       !form.endDate
@@ -51,6 +66,11 @@ export default function LouerEmploye() {
         "Veuillez remplir tous les champs obligatoires."
       );
 
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.clientEmail.trim())) {
+      setMessage("Veuillez saisir une adresse e-mail valide.");
       return;
     }
 
@@ -63,7 +83,7 @@ export default function LouerEmploye() {
     }
 
     if (
-      new Date(form.endDate) <
+      new Date(form.endDate) <=
       new Date(form.startDate)
     ) {
       setMessage(
@@ -77,7 +97,7 @@ export default function LouerEmploye() {
       setLoading(true);
 
       const response = await fetch(
-        `${API}/api/reservations`,
+        `/api/reservations`,
         {
           method: "POST",
 
@@ -91,6 +111,9 @@ export default function LouerEmploye() {
           body: JSON.stringify({
             clientName:
               form.clientName.trim(),
+
+            clientEmail:
+              form.clientEmail.trim().toLowerCase(),
 
             phone:
               form.phone.trim(),
@@ -127,6 +150,7 @@ export default function LouerEmploye() {
 
       setForm({
         clientName: "",
+        clientEmail: "",
         phone: "",
         startDate: "",
         endDate: "",
@@ -283,7 +307,7 @@ export default function LouerEmploye() {
               </strong>
 
               <span>
-                Les coordonnées de l'employé
+                Les coordonnées de l&apos;employé
                 restent confidentielles.
               </span>
 
@@ -359,6 +383,26 @@ export default function LouerEmploye() {
 
                 </div>
 
+              </div>
+
+
+              {/* EMAIL */}
+
+              <div className="field full">
+                <label htmlFor="clientEmail">Votre adresse e-mail</label>
+                <div className="inputWrap">
+                  <span className="inputIcon">EMAIL</span>
+                  <input
+                    id="clientEmail"
+                    name="clientEmail"
+                    type="email"
+                    placeholder="vous@exemple.com"
+                    value={form.clientEmail}
+                    onChange={handleChange}
+                    autoComplete="email"
+                    required
+                  />
+                </div>
               </div>
 
 
@@ -653,7 +697,7 @@ export default function LouerEmploye() {
 
               <div>
                 <div className="smallLabel">
-                  BESOIN D'AIDE ?
+                  BESOIN D&apos;AIDE ?
                 </div>
 
                 <strong>
@@ -693,7 +737,7 @@ export default function LouerEmploye() {
 
             <p>
               Aucun numéro de téléphone ou
-              contact direct de l'employé ne sera
+              contact direct de l&apos;employé ne sera
               communiqué publiquement.
             </p>
 

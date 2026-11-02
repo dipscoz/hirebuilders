@@ -963,7 +963,7 @@ export default function CategoriesPage() {
             <div>
 
               <div className="ctaLabel">
-                BESOIN D'UN PROFESSIONNEL ?
+                BESOIN D&apos;UN PROFESSIONNEL ?
               </div>
 
               <h2>
