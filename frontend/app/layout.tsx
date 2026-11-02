@@ -1,4 +1,5 @@
 import "./globals.css";
+import Link from "next/link";
 
 import type {
   Metadata,
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Explorez les métiers du BTP à Dakar, consultez les profils disponibles et transmettez une demande de réservation avec HireBuilders.",
+    "Découvrez les métiers du BTP à Dakar. Les inscriptions et demandes HireBuilders sont temporairement suspendues pendant la préparation du service.",
 
   keywords: [
     "HireBuilders",
@@ -109,7 +110,7 @@ export const metadata: Metadata = {
       "HireBuilders — Professionnels du BTP à Dakar",
 
     description:
-      "Explorez les profils de professionnels du BTP à Dakar et envoyez une demande avec HireBuilders.",
+      "Découvrez les métiers du BTP à Dakar. Les demandes HireBuilders sont temporairement suspendues pendant la préparation du service.",
   },
 
   twitter: {
@@ -120,7 +121,7 @@ export const metadata: Metadata = {
       "HireBuilders — Professionnels du BTP à Dakar",
 
     description:
-      "Explorez les profils de professionnels du BTP à Dakar et envoyez une demande avec HireBuilders.",
+      "Découvrez les métiers du BTP à Dakar. Les demandes HireBuilders sont temporairement suspendues pendant la préparation du service.",
   },
 
   appleWebApp: {
@@ -195,6 +196,9 @@ export default function RootLayout({
       </head>
 
       <body>
+        <div className="servicePauseBanner" role="status">
+          Les inscriptions et demandes HireBuilders sont temporairement suspendues. <Link href="/service-en-preparation">En savoir plus</Link>
+        </div>
         {children}
       </body>
     </html>

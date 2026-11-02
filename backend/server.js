@@ -87,6 +87,35 @@ app.use(
 );
 
 
+// TEMPORARY COMPLIANCE HOLD
+// Do not accept or store public account, application, booking, messaging,
+// notification, or employee-profile data until the required legal and data
+// protection formalities and service terms are in place.
+const pausedDataRoots = [
+  "/api/auth",
+  "/api/employee-applications",
+  "/api/employees",
+  "/api/messages",
+  "/api/notifications",
+  "/api/reservations",
+];
+
+app.use((req, res, next) => {
+  const requestPath = req.path.replace(/\/$/, "") || "/";
+  const isPaused = pausedDataRoots.some(
+    (root) => requestPath === root || requestPath.startsWith(`${root}/`),
+  );
+
+  if (!isPaused) return next();
+
+  return res.status(503).set("Cache-Control", "no-store").json({
+    success: false,
+    message:
+      "Les inscriptions, candidatures, réservations et échanges sont temporairement suspendus pendant la finalisation des formalités et des conditions du service.",
+  });
+});
+
+
 // =========================================================
 // EXPRESS BODY
 // =========================================================

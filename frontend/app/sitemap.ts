@@ -17,13 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
 
     {
-      url: `${BASE_URL}/employes`,
-      lastModified,
-      changeFrequency: "daily",
-      priority: 0.95,
-    },
-
-    {
       url: `${BASE_URL}/categories`,
       lastModified,
       changeFrequency: "weekly",
@@ -51,18 +44,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
 
-    {
-      url: `${BASE_URL}/contact`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-
-    {
-      url: `${BASE_URL}/postuler-employe`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.75,
-    },
   ];
 }
