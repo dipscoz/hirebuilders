@@ -432,7 +432,7 @@ export default function NotificationsPage() {
               </div>
 
               <div className="brandSub">
-                Plateforme BTP Sénégal
+                HireBuilders · BTP à Dakar
               </div>
 
             </div>

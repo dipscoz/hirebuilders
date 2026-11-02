@@ -156,9 +156,7 @@ Hire<span>Builders</span>
 
 <p>
 
-La plateforme qui connecte
-les professionnels du BTP
-au Sénégal.
+Les outils pour parcourir des profils de professionnels du BTP à Dakar et transmettre vos demandes.
 
 </p>
 
@@ -228,39 +226,12 @@ Contact
 <div className="footerContact">
 
 
-<h3>
+<h3>Contact</h3>
 
-Contact
+<p>Réponse du lundi au vendredi · Dakar</p>
 
-</h3>
-
-
-
-<p>
-
-Disponible 7j/7
-
-</p>
-
-
-
-
-<a
-
-href="https://wa.me/221781252980?text=Bonjour HireBuilders"
-
-target="_blank"
-
-className="footerWhatsapp"
-
->
-
-💬 WhatsApp
-
-<br/>
-
-78 125 29 80
-
+<a href="https://wa.me/221781252980?text=Bonjour%20HireBuilders" target="_blank" rel="noopener noreferrer" className="footerWhatsapp">
+  WhatsApp · +221 78 125 29 80
 </a>
 
 

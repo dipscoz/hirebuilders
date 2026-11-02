@@ -319,7 +319,7 @@ export default function AjouterEmploye() {
                     id="phone"
                     name="phone"
                     type="tel"
-                    placeholder="78 125 29 80"
+                    placeholder="Téléphone du professionnel"
                     value={form.phone}
                     onChange={handleChange}
                     autoComplete="tel"
@@ -376,7 +376,7 @@ export default function AjouterEmploye() {
                     id="city"
                     name="city"
                     type="text"
-                    placeholder="Dakar"
+                    placeholder="Ville du professionnel"
                     value={form.city}
                     onChange={handleChange}
                   />
@@ -546,7 +546,7 @@ export default function AjouterEmploye() {
 
                 <strong>
                   {form.city ||
-                    "Sénégal"}
+                    "Ville non renseignée"}
                 </strong>
 
               </div>

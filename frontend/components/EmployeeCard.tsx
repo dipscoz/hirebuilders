@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-type Employee = { id: number; name: string; job: string; city: string; image?: string; price?: number };
+type Employee = { id: number; name: string; job: string; city?: string; experience?: string; image?: string; price?: number };
 
 export default function EmployeeCard({
   e,
@@ -26,15 +26,13 @@ export default function EmployeeCard({
 
         <div className="meta">
 
-          <span>⭐ 4.8</span>
-
-          <span>📍 Dakar</span>
+          <span>📍 {e.city || "Ville non renseignée"}</span>
 
         </div>
 
-        <div className="price">
-          {e.price} FCFA / jour
-        </div>
+        {typeof e.price === "number" && Number.isFinite(e.price) && (
+          <div className="price">{e.price.toLocaleString("fr-FR")} FCFA / jour</div>
+        )}
 
         <button
           onClick={() => onSelect(e)}

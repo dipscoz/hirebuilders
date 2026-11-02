@@ -2,65 +2,43 @@
 
 const features = [
   {
-    icon: "⚡",
-    title: "Réservation rapide",
-    text: "Réservez un employé qualifié en quelques minutes."
+    icon: "🔎",
+    title: "Cherchez par métier",
+    text: "Parcourez les spécialités proposées pour cibler votre besoin.",
   },
   {
-    icon: "🛡️",
-    title: "Professionnels vérifiés",
-    text: "Tous les profils sont contrôlés avant leur mise en ligne."
+    icon: "👷",
+    title: "Consultez les profils",
+    text: "Retrouvez les informations renseignées pour chaque professionnel.",
   },
   {
-    icon: "⭐",
-    title: "Les meilleurs talents",
-    text: "Des ouvriers expérimentés et bien notés."
+    icon: "🗓️",
+    title: "Précisez vos dates",
+    text: "Indiquez la période et les détails de votre chantier dans votre demande.",
   },
   {
-    icon: "📍",
-    title: "Disponible partout",
-    text: "Dakar, Thiès, Saint-Louis et tout le Sénégal."
-  }
+    icon: "📋",
+    title: "Suivez vos demandes",
+    text: "Connectez-vous pour retrouver vos réservations et leurs mises à jour.",
+  },
 ];
 
 export default function WhyChoose() {
-
   return (
-
     <section className="why">
-
       <div className="why-title">
-
-        <h2>Pourquoi choisir HireBuilders ?</h2>
-
-        <p>
-          Une plateforme moderne pour connecter les entreprises aux meilleurs professionnels.
-        </p>
-
+        <h2>Une recherche claire, du besoin à la demande</h2>
+        <p>HireBuilders rassemble les outils utiles pour explorer des profils et transmettre votre besoin.</p>
       </div>
-
       <div className="why-grid">
-
-        {features.map((item, index) => (
-
-          <div className="why-card" key={index}>
-
-            <div className="why-icon">
-              {item.icon}
-            </div>
-
+        {features.map((item) => (
+          <article className="why-card" key={item.title}>
+            <div className="why-icon" aria-hidden="true">{item.icon}</div>
             <h3>{item.title}</h3>
-
             <p>{item.text}</p>
-
-          </div>
-
+          </article>
         ))}
-
       </div>
-
     </section>
-
   );
-
 }

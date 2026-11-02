@@ -102,7 +102,7 @@ export default function EmployeeProfilePage() {
                 </div>
 
                 <div className="brandSub">
-                  Plateforme BTP Sénégal
+                  HireBuilders · BTP à Dakar
                 </div>
               </div>
             </Link>
@@ -146,7 +146,7 @@ export default function EmployeeProfilePage() {
                 </div>
 
                 <div className="brandSub">
-                  Plateforme BTP Sénégal
+                  HireBuilders · BTP à Dakar
                 </div>
               </div>
             </Link>
@@ -213,7 +213,7 @@ export default function EmployeeProfilePage() {
               </div>
 
               <div className="brandSub">
-                Plateforme BTP Sénégal
+                HireBuilders · BTP à Dakar
               </div>
             </div>
           </Link>
@@ -289,7 +289,7 @@ export default function EmployeeProfilePage() {
 
               <div className="verified">
                 <span />
-                Profil vérifié
+                Profil professionnel
               </div>
 
             </div>
@@ -330,7 +330,7 @@ export default function EmployeeProfilePage() {
 
                 <strong>
                   {employee.city ||
-                    "Sénégal"}
+                    "Ville non renseignée"}
                 </strong>
 
               </div>
@@ -519,7 +519,7 @@ export default function EmployeeProfilePage() {
 
             <p>
               La plateforme qui connecte les
-              professionnels du BTP au Sénégal.
+              professionnels du BTP à Dakar.
             </p>
           </div>
 

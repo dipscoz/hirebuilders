@@ -1,207 +1,28 @@
-"use client";
-
-
-import {useState} from "react";
-
-type Employee = { id: number; name: string; phone: string; job: string; city: string; experience: string };
-
-
-
-export default function Cards({employees}: { employees: Employee[] }){
-
-
-const [selected,setSelected]=useState<Employee | null>(null);
-
-
-
-return(
-
-<section className="cards-container">
-
-
-
-{employees.map((e)=>(
-
-
-<div className="employee-card" key={e.id}>
-
-
-<div className="avatar">
-
-👷
-
-</div>
-
-
-
-<span className="available">
-
-Disponible
-
-</span>
-
-
-
-<h2>
-
-{e.name}
-
-</h2>
-
-
-<h3>
-
-{e.job}
-
-</h3>
-
-
-
-<p>
-
-📍 {e.city}
-
-</p>
-
-
-
-<p>
-
-Expérience : {e.experience}
-
-</p>
-
-
-
-
-<a
-
-href={`https://wa.me/221${e.phone}`}
-
-target="_blank"
-
-className="whatsapp"
-
->
-
-WhatsApp
-
-</a>
-
-
-
-
-<button
-
-className="reserve"
-
-onClick={()=>setSelected(e)}
-
->
-
-Réserver
-
-</button>
-
-
-
-</div>
-
-
-))}
-
-
-
-
-{selected && (
-
-
-<div className="modal">
-
-
-<div className="modal-box">
-
-
-<h2>
-
-Réserver {selected.name}
-
-</h2>
-
-
-
-<input
-
-placeholder="Votre nom"
-
-/>
-
-
-
-<input
-
-placeholder="Votre téléphone"
-
-/>
-
-
-
-<input
-
-type="date"
-
-/>
-
-
-
-<textarea
-
-placeholder="Description du chantier"
-
-/>
-
-
-
-<button
-
-className="reserve"
-
->
-
-Envoyer réservation
-
-</button>
-
-
-
-<button
-
-className="close"
-
-onClick={()=>setSelected(null)}
-
->
-
-Fermer
-
-</button>
-
-
-
-</div>
-
-
-</div>
-
-
-)}
-
-
-
-</section>
-
-
-);
-
-
+import Link from "next/link";
+
+type Employee = {
+  id: number;
+  name: string;
+  job: string;
+  city?: string | null;
+  experience?: string | null;
+};
+
+export default function Cards({ employees }: { employees: Employee[] }) {
+  return (
+    <section className="cards-container" aria-label="Profils de professionnels">
+      {employees.map((employee) => (
+        <article className="employee-card" key={employee.id}>
+          <div className="avatar" aria-hidden="true">👷</div>
+          <h2>{employee.name}</h2>
+          <h3>{employee.job}</h3>
+          <p>📍 {employee.city || "Ville non renseignée"}</p>
+          <p>Expérience : {employee.experience || "Non précisée"}</p>
+          <Link className="reserve" href={`/louer/${employee.id}`}>
+            Envoyer une demande
+          </Link>
+        </article>
+      ))}
+    </section>
+  );
 }

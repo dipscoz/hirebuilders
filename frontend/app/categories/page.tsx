@@ -8,42 +8,36 @@ const categories = [
     icon: "🧱",
     description:
       "Construction de murs, fondations, dalles et travaux de maçonnerie.",
-    count: "250+",
   },
   {
     name: "Électricien",
     icon: "⚡",
     description:
       "Installations électriques, dépannage, câblage et mise aux normes.",
-    count: "180+",
   },
   {
     name: "Plombier",
     icon: "🔧",
     description:
       "Installation et réparation des réseaux d'eau et de plomberie.",
-    count: "160+",
   },
   {
     name: "Peintre",
     icon: "🎨",
     description:
       "Peinture intérieure, extérieure, finition et décoration.",
-    count: "220+",
   },
   {
     name: "Carreleur",
     icon: "◼️",
     description:
       "Pose de carrelage, faïence et revêtements de sols et murs.",
-    count: "140+",
   },
   {
     name: "Menuisier",
     icon: "🪵",
     description:
       "Portes, fenêtres, meubles et travaux de menuiserie sur mesure.",
-    count: "130+",
   },
 ];
 
@@ -790,7 +784,7 @@ export default function CategoriesPage() {
                 </div>
 
                 <div className="brandSub">
-                  Plateforme BTP Sénégal
+                  HireBuilders · BTP à Dakar
                 </div>
 
               </div>
@@ -864,9 +858,8 @@ export default function CategoriesPage() {
             </h1>
 
             <p>
-              Explorez nos différentes catégories de
-              métiers et trouvez rapidement le
-              professionnel adapté à votre projet.
+              Explorez les métiers proposés et consultez
+              les profils correspondant à votre besoin.
             </p>
 
           </div>
@@ -926,11 +919,6 @@ export default function CategoriesPage() {
 
 
                 <div className="cardBottom">
-
-                  <div className="workerCount">
-                    {category.count} professionnels
-                  </div>
-
 
                   <Link
                     href={`/categories/metier?metier=${encodeURIComponent(
@@ -1002,8 +990,7 @@ export default function CategoriesPage() {
               </div>
 
               <p style={{ marginTop: 12 }}>
-                La plateforme qui connecte les
-                professionnels du BTP au Sénégal.
+                Parcourez les métiers du BTP et envoyez une demande de réservation en ligne.
               </p>
 
             </div>
@@ -1048,29 +1035,9 @@ export default function CategoriesPage() {
                 Contact
               </h3>
 
-              <p>
-                Disponible 7j/7
-              </p>
+              <p>Réponse du lundi au vendredi · Dakar</p>
 
-              <p>
-                <a
-                  href="https://wa.me/221781252980"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  💬 WhatsApp
-                </a>
-              </p>
-
-              <p>
-                <a
-                  href="https://wa.me/221781252980"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  78 125 29 80
-                </a>
-              </p>
+              <p><a href="https://wa.me/221781252980?text=Bonjour%20HireBuilders" target="_blank" rel="noopener noreferrer">WhatsApp · +221 78 125 29 80</a></p>
 
             </div>
 

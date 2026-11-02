@@ -26,7 +26,7 @@ export default function Hero() {
       >
 
         <div className="badge">
-          ✓ Employés BTP vérifiés
+          TROUVER UN PROFESSIONNEL DU BTP
         </div>
 
         <h1>
@@ -39,10 +39,8 @@ export default function Hero() {
         </h1>
 
         <p>
-          HireBuilders connecte les entreprises
-          et particuliers avec des employés
-          qualifiés et fiables pour tous vos
-          travaux au Sénégal.
+          Parcourez les profils par métier, découvrez les informations disponibles
+          et envoyez une demande adaptée à votre chantier.
         </p>
 
         <div className="hero-buttons">
@@ -91,21 +89,16 @@ export default function Hero() {
         </div>
 
         <h2>
-          1500+
+          Votre projet
         </h2>
 
         <p>
-          Professionnels disponibles
+          commence par le bon métier.
         </p>
 
-        <a
-          href="https://wa.me/221781252980"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="whatsapp"
-        >
-          Contacter WhatsApp
-        </a>
+        <Link href="/categories" className="whatsapp">
+          Explorer les métiers →
+        </Link>
 
       </motion.div>
 

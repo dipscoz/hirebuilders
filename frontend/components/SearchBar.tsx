@@ -29,7 +29,7 @@ return (
 📍 Localisation
 </label>
 
-<input placeholder="Ex: Dakar, Thiès, Saint-Louis..." />
+<input placeholder="Nom, métier ou ville..." />
 
 </div>
 

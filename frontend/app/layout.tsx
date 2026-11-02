@@ -14,27 +14,24 @@ export const metadata: Metadata = {
 
   title: {
     default:
-      "HireBuilders — Professionnels du BTP au Sénégal",
+      "HireBuilders — Professionnels du BTP à Dakar",
 
     template:
       "%s | HireBuilders",
   },
 
   description:
-    "HireBuilders met en relation les clients avec des professionnels du BTP au Sénégal. Trouvez un employé, découvrez les métiers et réservez un professionnel adapté à votre projet.",
+    "Explorez les métiers du BTP à Dakar, consultez les profils disponibles et transmettez une demande de réservation avec HireBuilders.",
 
   keywords: [
     "HireBuilders",
-    "BTP Sénégal",
-    "professionnels BTP Sénégal",
-    "employés BTP Sénégal",
-    "location employés Sénégal",
-    "ouvriers Sénégal",
-    "maçons Sénégal",
-    "électriciens Sénégal",
-    "plombiers Sénégal",
-    "construction Sénégal",
-    "Dakar BTP",
+    "professionnels du BTP",
+    "métiers du bâtiment",
+    "maçons",
+    "électriciens",
+    "plombiers",
+    "réservation professionnel BTP",
+    "BTP Dakar",
   ],
 
   applicationName:
@@ -109,10 +106,10 @@ export const metadata: Metadata = {
       "HireBuilders",
 
     title:
-      "HireBuilders — Professionnels du BTP au Sénégal",
+      "HireBuilders — Professionnels du BTP à Dakar",
 
     description:
-      "Trouvez et réservez des professionnels du BTP au Sénégal avec HireBuilders.",
+      "Explorez les profils de professionnels du BTP à Dakar et envoyez une demande avec HireBuilders.",
   },
 
   twitter: {
@@ -120,10 +117,10 @@ export const metadata: Metadata = {
       "summary_large_image",
 
     title:
-      "HireBuilders — Professionnels du BTP au Sénégal",
+      "HireBuilders — Professionnels du BTP à Dakar",
 
     description:
-      "Trouvez et réservez des professionnels du BTP au Sénégal avec HireBuilders.",
+      "Explorez les profils de professionnels du BTP à Dakar et envoyez une demande avec HireBuilders.",
   },
 
   appleWebApp: {

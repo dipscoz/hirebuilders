@@ -203,7 +203,7 @@ export default function LouerEmploye() {
               </div>
 
               <div className="brandSub">
-                Plateforme BTP Sénégal
+                HireBuilders · BTP à Dakar
               </div>
 
             </div>
@@ -424,7 +424,7 @@ export default function LouerEmploye() {
                     id="phone"
                     name="phone"
                     type="tel"
-                    placeholder="Ex : 78 125 29 80"
+                    placeholder="Votre numéro de téléphone"
                     value={form.phone}
                     onChange={handleChange}
                     autoComplete="tel"
@@ -732,13 +732,12 @@ export default function LouerEmploye() {
           <div>
 
             <strong>
-              Vous êtes protégé par HireBuilders
+              À propos des coordonnées
             </strong>
 
             <p>
-              Aucun numéro de téléphone ou
-              contact direct de l&apos;employé ne sera
-              communiqué publiquement.
+              Le numéro du professionnel n&apos;est pas affiché sur sa fiche.
+              Vous pouvez transmettre votre demande via HireBuilders.
             </p>
 
           </div>
@@ -764,7 +763,7 @@ export default function LouerEmploye() {
 
             <p>
               La plateforme qui connecte les
-              professionnels du BTP au Sénégal.
+              professionnels du BTP à Dakar.
             </p>
 
           </div>
