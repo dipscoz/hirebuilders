@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 const PAUSED_PAGES = [
   "/contact",
-  "/connexion",
   "/employes",
   "/inscription-employe",
   "/notifications",
@@ -53,7 +52,6 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/contact/:path*",
-    "/connexion/:path*",
     "/employes/:path*",
     "/inscription-employe/:path*",
     "/notifications/:path*",
