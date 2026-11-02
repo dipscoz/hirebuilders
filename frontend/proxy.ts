@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 const PAUSED_PAGES = [
   "/contact",
   "/employes",
-  "/inscription-employe",
   "/notifications",
   "/postuler-employe",
   "/profil",
@@ -12,7 +11,6 @@ const PAUSED_PAGES = [
 ];
 
 const PAUSED_API_ROOTS = [
-  "/api/auth",
   "/api/employee-applications",
   "/api/employees",
   "/api/messages",
@@ -21,7 +19,7 @@ const PAUSED_API_ROOTS = [
 ];
 
 const PAUSE_MESSAGE =
-  "Les inscriptions, candidatures, réservations et échanges sont temporairement suspendus pendant la finalisation des formalités et des conditions du service.";
+  "Les candidatures, réservations et messages sont temporairement suspendus pendant la finalisation des formalités et des conditions du service.";
 
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname.replace(/\/$/, "") || "/";
@@ -53,7 +51,6 @@ export const config = {
   matcher: [
     "/contact/:path*",
     "/employes/:path*",
-    "/inscription-employe/:path*",
     "/notifications/:path*",
     "/postuler-employe/:path*",
     "/profil/:path*",

@@ -17,6 +17,7 @@ export default function robots(): MetadataRoute.Robots {
           "/reservations",
           "/notifications",
           "/connexion",
+          "/inscription-employe",
           "/service-en-preparation",
         ],
       },

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import ConnexionForm from "./ConnexionForm";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "Connexion temporairement suspendue",
-  description: "L’accès aux comptes HireBuilders est momentanément suspendu.",
+  title: "Connexion",
+  description: "Connectez-vous à votre espace HireBuilders.",
   robots: { index: false, follow: false },
 };
 
@@ -16,15 +17,21 @@ type ConnexionPageProps = {
 
 const AUTH_ERRORS: Record<string, string> = {
   google_callback_failed:
-    "La tentative de connexion avec Google n’a pas abouti. L’accès aux comptes est temporairement suspendu pendant la préparation du service.",
+    "La tentative Google n’a pas abouti. Réessayez, ou connectez-vous avec votre adresse e-mail et votre mot de passe.",
   google_config:
-    "La connexion avec Google n’est pas disponible pour le moment. Les comptes HireBuilders sont temporairement suspendus.",
+    "La connexion avec Google n’est pas configurée. Vous pouvez utiliser votre adresse e-mail et votre mot de passe.",
   google_invalid_token:
-    "La vérification de cette tentative de connexion a échoué. Les comptes HireBuilders sont temporairement suspendus.",
+    "La réponse de Google n’a pas pu être vérifiée. Réessayez de vous connecter.",
   google_invalid_user:
-    "Le compte n’a pas pu être vérifié. Les comptes HireBuilders sont temporairement suspendus.",
+    "Les informations du compte Google sont incomplètes. Réessayez avec Google ou utilisez votre mot de passe.",
   google_missing_token:
-    "La réponse de connexion Google est incomplète. Les comptes HireBuilders sont temporairement suspendus.",
+    "Google n’a pas renvoyé les informations nécessaires. Réessayez de vous connecter.",
+  google_cancelled:
+    "La connexion Google a été annulée. Vous pouvez réessayer ou utiliser votre adresse e-mail.",
+  google_email_not_verified:
+    "L’adresse e-mail du compte Google n’est pas vérifiée. Vérifiez-la auprès de Google puis réessayez.",
+  google_login_failed:
+    "Google n’a pas pu terminer la connexion. Réessayez ou utilisez votre adresse e-mail et votre mot de passe.",
 };
 
 export default async function ConnexionPage({ searchParams }: ConnexionPageProps) {
@@ -48,9 +55,9 @@ export default async function ConnexionPage({ searchParams }: ConnexionPageProps
 
           <div className={styles.storyContent}>
             <span className={styles.kicker}>ESPACE MEMBRE</span>
-            <h1 id="story-title">Un espace pensé pour vos projets.</h1>
+            <h1 id="story-title">Retrouvez votre espace HireBuilders.</h1>
             <p>
-              HireBuilders prépare son lancement à Dakar. Les comptes et les demandes seront accessibles lorsque les conditions du service seront prêtes.
+              Connectez-vous pour retrouver votre compte. Les candidatures, réservations et messages restent momentanément suspendus.
             </p>
           </div>
 
@@ -90,36 +97,22 @@ export default async function ConnexionPage({ searchParams }: ConnexionPageProps
               </svg>
             </div>
 
-            <span className={styles.stateLabel}>ACCÈS TEMPORAIREMENT SUSPENDU</span>
-            <h2 id="access-title">Connexion en pause.</h2>
+            <span className={styles.stateLabel}>ESPACE MEMBRE</span>
+            <h2 id="access-title">Content de vous revoir.</h2>
             <p className={styles.intro}>
-              Nous finalisons les formalités et les conditions de mise en relation avant d’ouvrir les comptes.
+              Saisissez les identifiants associés à votre compte.
             </p>
 
-            {errorMessage && (
-              <div className={styles.errorNotice} role="alert">
-                <span className={styles.errorTitle}>À propos de votre tentative</span>
-                <p>{errorMessage}</p>
-              </div>
-            )}
-
-            <div className={styles.notice} role="status">
+            <ConnexionForm initialError={errorMessage} />
+            <div className={styles.notice} role="note">
               <span className={styles.noticeLine} />
-              <p>Aucun identifiant ne peut être envoyé depuis cet écran pour le moment.</p>
+              <p>Les candidatures, réservations, demandes de prestation et messages sont encore suspendus pendant la préparation du service.</p>
             </div>
-
-            <Link className={styles.primaryAction} href="/service-en-preparation">
-              Voir l’état du service
-              <span aria-hidden="true">→</span>
-            </Link>
-            <Link className={styles.secondaryAction} href="/">
-              Revenir sur HireBuilders
-            </Link>
           </div>
 
           <div className={styles.accessFooter}>
             <span>© {new Date().getFullYear()} HireBuilders</span>
-            <span>Service en préparation</span>
+            <span>Professionnels du BTP à Dakar</span>
           </div>
         </section>
       </div>
