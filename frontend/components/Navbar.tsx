@@ -740,7 +740,7 @@ export default function Navbar() {
             Employés
           </Link>
 
-          <Link href="/categories/metier">
+          <Link href="/categories">
             Métiers
           </Link>
 
@@ -818,7 +818,10 @@ export default function Navbar() {
                   >
 
                     <span className="bell">
-                      🔔
+                      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                        <path d="M10 21h4" />
+                      </svg>
                     </span>
 
 
@@ -898,10 +901,6 @@ export default function Navbar() {
                         0 ? (
 
                         <div className="notificationState empty">
-
-                          <div className="emptyBell">
-                            🔔
-                          </div>
 
                           <strong>
                             Aucune notification
@@ -1127,10 +1126,6 @@ export default function Navbar() {
                           )
                         }
                       >
-                        <span>
-                          👤
-                        </span>
-
                         Mon profil
                       </Link>
 
@@ -1144,10 +1139,6 @@ export default function Navbar() {
                           )
                         }
                       >
-                        <span>
-                          🔔
-                        </span>
-
                         Notifications
 
                         {unreadCount >
@@ -1171,10 +1162,6 @@ export default function Navbar() {
                           )
                         }
                       >
-                        <span>
-                          📋
-                        </span>
-
                         Mes réservations
                       </Link>
 
@@ -1190,10 +1177,6 @@ export default function Navbar() {
                             )
                           }
                         >
-                          <span>
-                            🛠️
-                          </span>
-
                           Postuler comme employé
                         </Link>
                       )}
@@ -1210,10 +1193,6 @@ export default function Navbar() {
                             )
                           }
                         >
-                          <span>
-                            🛡️
-                          </span>
-
                           Administration
                         </Link>
                       )}
