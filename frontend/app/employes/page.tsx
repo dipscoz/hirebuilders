@@ -12,8 +12,6 @@ type Employee = {
   available?: boolean;
 };
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function EmployesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -29,7 +27,7 @@ export default function EmployesPage() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(`${API}/api/employees`, {
+        const response = await fetch(`/api/employees`, {
           cache: "no-store",
         });
 
@@ -1341,7 +1339,7 @@ export default function EmployesPage() {
             <div>
 
               <div className="ctaLabel">
-                BESOIN D'UN PROFESSIONNEL ?
+                BESOIN D&apos;UN PROFESSIONNEL ?
               </div>
 
               <h2>

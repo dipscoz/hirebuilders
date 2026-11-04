@@ -16,9 +16,6 @@ type Employee = {
   createdAt?: string;
 };
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 export default function ModifierEmployePage() {
   const params = useParams();
@@ -62,7 +59,7 @@ export default function ModifierEmployePage() {
         setError("");
 
         const response = await fetch(
-          `${API}/api/employees/admin/all`,
+          `/api/employees/admin/all`,
           {
             method: "GET",
             credentials: "include",
@@ -178,7 +175,7 @@ export default function ModifierEmployePage() {
       setSaving(true);
 
       const response = await fetch(
-        `${API}/api/employees/${id}`,
+        `/api/employees/${id}`,
         {
           method: "PUT",
 
@@ -277,7 +274,7 @@ export default function ModifierEmployePage() {
           </div>
 
           <h2>
-            Impossible de charger l'employé
+            Impossible de charger l&apos;employé
           </h2>
 
           <p>{error}</p>
@@ -736,7 +733,7 @@ export default function ModifierEmployePage() {
               <p>
                 Le numéro de téléphone reste
                 protégé sur les pages publiques.
-                Seul l'administrateur peut le voir.
+                Seul l&apos;administrateur peut le voir.
               </p>
 
             </div>

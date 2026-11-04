@@ -3,12 +3,74 @@ const { PrismaClient } = require("@prisma/client");
 
 const adminAuth =
   require("../middleware/adminAuth");
+const auth =
+  require("../middleware/auth");
 
 const router =
   express.Router();
 
 const prisma =
   new PrismaClient();
+
+const ADMIN_EMAILS = new Set([
+  "dipscoz@gmail.com",
+  "ndeyebirametall50@gmail.com",
+]);
+
+// Réservations visibles uniquement par le compte client associé à l'adresse.
+router.get("/mine", auth, async (req, res) => {
+  try {
+    const email = String(req.user?.email || "").trim().toLowerCase();
+    if (!email) return res.status(401).json({ success: false, message: "Session invalide." });
+
+    const reservations = await prisma.reservation.findMany({
+      where: { clientEmail: email },
+      include: {
+        employee: {
+          select: {
+            id: true,
+            name: true,
+            job: true,
+            city: true,
+            experience: true,
+            available: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return res.json({ success: true, reservations });
+  } catch (error) {
+    console.error("Erreur récupération réservations client :", error);
+    return res.status(500).json({ success: false, message: "Impossible de charger vos réservations." });
+  }
+});
+
+// Annulation par le client propriétaire ou un administrateur authentifié.
+router.put("/:id/cancel", auth, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ success: false, message: "Réservation invalide." });
+
+    const reservation = await prisma.reservation.findUnique({ where: { id } });
+    if (!reservation) return res.status(404).json({ success: false, message: "Réservation introuvable." });
+
+    const userEmail = String(req.user?.email || "").trim().toLowerCase();
+    const isAdmin = String(req.user?.role || "").toLowerCase() === "admin" || ADMIN_EMAILS.has(userEmail);
+    const ownsReservation = userEmail === String(reservation.clientEmail || "").trim().toLowerCase();
+    if (!isAdmin && !ownsReservation) return res.status(403).json({ success: false, message: "Vous ne pouvez pas annuler cette réservation." });
+    if (reservation.status !== "pending") return res.status(409).json({ success: false, message: "Seules les réservations en attente peuvent être annulées." });
+
+    const result = await prisma.reservation.updateMany({ where: { id, status: "pending" }, data: { status: "cancelled" } });
+    if (result.count !== 1) return res.status(409).json({ success: false, message: "Cette réservation a déjà été traitée." });
+    const updated = await prisma.reservation.findUnique({ where: { id } });
+    return res.json({ success: true, message: "Réservation annulée.", reservation: updated });
+  } catch (error) {
+    console.error("Erreur annulation réservation :", error);
+    return res.status(500).json({ success: false, message: "Impossible d'annuler cette réservation." });
+  }
+});
 
 
 // =========================================================
@@ -75,10 +137,11 @@ router.post(
       // -----------------------------------------------------
 
       if (
-        !clientName ||
-        !phone ||
-        !startDate ||
-        !endDate ||
+        typeof clientName !== "string" || !clientName.trim() ||
+        typeof clientEmail !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail.trim()) ||
+        typeof phone !== "string" || !phone.trim() ||
+        typeof startDate !== "string" || !startDate.trim() ||
+        typeof endDate !== "string" || !endDate.trim() ||
         !employeeId
       ) {
         return res.status(400).json({
@@ -86,6 +149,12 @@ router.post(
           message:
             "Les champs obligatoires sont manquants.",
         });
+      }
+
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end <= start) {
+        return res.status(400).json({ success: false, message: "La date de fin doit être après la date de début." });
       }
 
 
@@ -153,11 +222,7 @@ router.post(
               ).trim(),
 
             clientEmail:
-              clientEmail
-                ? String(
-                    clientEmail
-                  ).trim()
-                : null,
+              String(clientEmail).trim().toLowerCase(),
 
             phone:
               String(

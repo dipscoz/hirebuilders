@@ -1,12 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 type Application = {
   id: number;
@@ -51,13 +48,13 @@ export default function PostulerEmployePage() {
   // CHARGER LA CANDIDATURE
   // ========================================================
 
-  async function loadApplication() {
+  const loadApplication = useCallback(async () => {
     try {
       setLoading(true);
 
       const response =
         await fetch(
-          `${API}/api/employee-applications/me`,
+          `/api/employee-applications/me`,
           {
             method: "GET",
             credentials: "include",
@@ -99,11 +96,12 @@ export default function PostulerEmployePage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [router]);
 
   useEffect(() => {
-    loadApplication();
-  }, []);
+    const initialLoad = window.setTimeout(() => void loadApplication(), 0);
+    return () => window.clearTimeout(initialLoad);
+  }, [loadApplication]);
 
 
   // ========================================================
@@ -157,7 +155,7 @@ export default function PostulerEmployePage() {
 
       const response =
         await fetch(
-          `${API}/api/employee-applications`,
+          `/api/employee-applications`,
           {
             method: "POST",
 
@@ -289,7 +287,7 @@ export default function PostulerEmployePage() {
           <p>
             Présentez votre profil professionnel.
             Votre candidature sera vérifiée par notre
-            équipe avant d'être publiée aux clients.
+            équipe avant d&apos;être publiée aux clients.
           </p>
 
         </section>
@@ -417,7 +415,7 @@ export default function PostulerEmployePage() {
 
                 <p>
                   Contactez HireBuilders pour obtenir
-                  plus d'informations.
+                  plus d&apos;informations.
                 </p>
 
               </div>

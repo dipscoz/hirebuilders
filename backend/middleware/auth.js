@@ -1,47 +1,37 @@
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET =
-  process.env.JWT_SECRET ||
-  "hirebuilders-dev-secret";
+const JWT_SECRET = require("../config/jwt");
 
 const COOKIE_NAME =
   "hirebuilders_token";
 
 function getTokenFromRequest(req) {
-  const cookieHeader =
-    req.headers.cookie;
-
-  if (!cookieHeader) {
-    return null;
+  const authorization = req.headers?.authorization;
+  if (typeof authorization === "string" && authorization.startsWith("Bearer ")) {
+    const bearer = authorization.slice(7).trim();
+    if (bearer) return bearer;
   }
 
-  const cookies = {};
+  if (req.cookies?.[COOKIE_NAME]) {
+    return req.cookies[COOKIE_NAME];
+  }
 
-  cookieHeader
+  const cookieHeader = req.headers?.cookie;
+  if (!cookieHeader) return null;
+
+  const cookie = cookieHeader
     .split(";")
-    .forEach((part) => {
-      const separator =
-        part.indexOf("=");
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${COOKIE_NAME}=`));
 
-      if (separator === -1) {
-        return;
-      }
+  if (!cookie) return null;
 
-      const name =
-        part
-          .slice(0, separator)
-          .trim();
-
-      const value =
-        part
-          .slice(separator + 1)
-          .trim();
-
-      cookies[name] =
-        decodeURIComponent(value);
-    });
-
-  return cookies[COOKIE_NAME] || null;
+  const value = cookie.slice(COOKIE_NAME.length + 1);
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return null;
+  }
 }
 
 function auth(req, res, next) {

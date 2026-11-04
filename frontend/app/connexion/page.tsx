@@ -121,7 +121,7 @@ export default function ConnexionPage() {
   // SAUVEGARDE UTILISATEUR
   // =========================================================
 
-  function saveUser(user: any) {
+  function saveUser(user: { firstName?: string; lastName?: string; email?: string; phone?: string; role?: string } | null) {
     if (!user) {
       return;
     }
@@ -1210,7 +1210,7 @@ export default function ConnexionPage() {
               href="/"
               className="back"
             >
-              ← Retour à l'accueil
+              ← Retour à l&apos;accueil
             </Link>
 
           </div>
@@ -1516,7 +1516,7 @@ export default function ConnexionPage() {
             <div className="bottom">
 
               <span>
-                Vous n'avez pas encore de compte ?
+                Vous n&apos;avez pas encore de compte ?
               </span>
 
               <Link

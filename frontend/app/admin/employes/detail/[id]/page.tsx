@@ -16,9 +16,6 @@ interface Employee {
   createdAt?: string;
 }
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 export default function DetailEmployePage() {
   const params = useParams();
@@ -45,7 +42,7 @@ export default function DetailEmployePage() {
         setError("");
 
         const response = await fetch(
-          `${API}/api/employees/admin/all`,
+          `/api/employees/admin/all`,
           {
             method: "GET",
             credentials: "include",
@@ -529,7 +526,7 @@ export default function DetailEmployePage() {
 
             <div className="privacyText">
               ✓ Visible uniquement depuis
-              l'espace administrateur.
+              l&apos;espace administrateur.
             </div>
 
           </aside>

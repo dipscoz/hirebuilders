@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -24,9 +24,6 @@ type Reservation = {
   };
 };
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 export default function ReservationsPage() {
   const router = useRouter();
@@ -43,14 +40,14 @@ export default function ReservationsPage() {
   const [actionLoading, setActionLoading] =
     useState<number | null>(null);
 
-  async function loadReservations() {
+  const loadReservations = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
 
       const response =
         await fetch(
-          `${API}/api/reservations/mine`,
+          `/api/reservations/mine`,
           {
             method: "GET",
 
@@ -105,11 +102,12 @@ export default function ReservationsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [router]);
 
   useEffect(() => {
-    loadReservations();
-  }, []);
+    const initialLoad = window.setTimeout(() => void loadReservations(), 0);
+    return () => window.clearTimeout(initialLoad);
+  }, [loadReservations]);
 
   async function cancelReservation(
     id: number
@@ -128,7 +126,7 @@ export default function ReservationsPage() {
 
       const response =
         await fetch(
-          `${API}/api/reservations/${id}/cancel`,
+          `/api/reservations/${id}/cancel`,
           {
             method: "PUT",
 
@@ -249,7 +247,7 @@ export default function ReservationsPage() {
           href="/"
           className="back"
         >
-          ← Retour à l'accueil
+          ← Retour à l&apos;accueil
         </Link>
 
 
@@ -363,7 +361,7 @@ export default function ReservationsPage() {
               </h2>
 
               <p>
-                Vous n'avez encore envoyé aucune
+                Vous n&apos;avez encore envoyé aucune
                 demande de réservation.
               </p>
 

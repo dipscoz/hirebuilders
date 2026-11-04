@@ -47,7 +47,7 @@ return (
 
 <option>Sélectionnez</option>
 
-<option>Aujourd'hui</option>
+<option>Aujourd&apos;hui</option>
 
 <option>Cette semaine</option>
 

@@ -12,7 +12,7 @@ return (
 <p>
 
 Notre plateforme facilite la recherche
-d'employés qualifiés pour vos travaux.
+d&apos;employés qualifiés pour vos travaux.
 
 </p>
 

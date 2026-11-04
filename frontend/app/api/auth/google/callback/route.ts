@@ -5,9 +5,7 @@ import {
 
 import jwt from "jsonwebtoken";
 
-const GOOGLE_HANDOFF_SECRET =
-  process.env.GOOGLE_HANDOFF_SECRET ||
-  process.env.JWT_SECRET;
+const GOOGLE_HANDOFF_SECRET = process.env.GOOGLE_HANDOFF_SECRET;
 
 export async function GET(
   request: NextRequest
@@ -49,7 +47,11 @@ export async function GET(
       decoded =
         jwt.verify(
           token,
-          GOOGLE_HANDOFF_SECRET
+          GOOGLE_HANDOFF_SECRET,
+          {
+            issuer: "hirebuilders-backend",
+            audience: "hirebuilders-google-handoff",
+          }
         ) as jwt.JwtPayload;
     } catch (error) {
       console.error(
@@ -98,6 +100,9 @@ export async function GET(
           request.url
         )
       );
+
+    response.headers.set("Cache-Control", "no-store");
+    response.headers.set("Referrer-Policy", "no-referrer");
 
     // -------------------------------------------------------
     // CREATION DE LA SESSION VERCEL
@@ -153,9 +158,10 @@ export async function GET(
 function createSessionToken(
   decoded: jwt.JwtPayload
 ) {
-  const sessionSecret =
-    process.env.JWT_SECRET ||
-    GOOGLE_HANDOFF_SECRET!;
+  const sessionSecret = process.env.JWT_SECRET;
+  if (!sessionSecret) {
+    throw new Error("JWT_SECRET absent dans l'environnement serveur Vercel.");
+  }
 
   return jwt.sign(
     {
@@ -170,14 +176,16 @@ function createSessionToken(
         decoded.role,
 
       firstName:
-        "",
+        String(decoded.firstName || ""),
 
       lastName:
-        "",
+        String(decoded.lastName || ""),
     },
     sessionSecret,
     {
       expiresIn: "7d",
+      issuer: "hirebuilders-frontend",
+      audience: "hirebuilders-session",
     }
   );
 }

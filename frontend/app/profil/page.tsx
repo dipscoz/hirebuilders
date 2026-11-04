@@ -14,9 +14,6 @@ type User = {
   createdAt?: string;
 };
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 export default function ProfilPage() {
   const router = useRouter();
@@ -73,7 +70,7 @@ export default function ProfilPage() {
         setLoading(true);
 
         const response = await fetch(
-          `${API}/api/auth/me`,
+          `/api/auth/me`,
           {
             method: "GET",
             credentials: "include",
@@ -186,7 +183,7 @@ export default function ProfilPage() {
       setSaving(true);
 
       const response = await fetch(
-        `${API}/api/auth/me`,
+        `/api/auth/me`,
         {
           method: "PUT",
           credentials: "include",
@@ -304,7 +301,7 @@ export default function ProfilPage() {
       setPasswordSaving(true);
 
       const response = await fetch(
-        `${API}/api/auth/password`,
+        `/api/auth/password`,
         {
           method: "PUT",
           credentials: "include",
@@ -364,7 +361,7 @@ export default function ProfilPage() {
   async function logout() {
     try {
       await fetch(
-        `${API}/api/auth/logout`,
+        `/api/auth/logout`,
         {
           method: "POST",
           credentials: "include",
@@ -477,7 +474,7 @@ export default function ProfilPage() {
           href="/"
           className="backLink"
         >
-          ← Retour à l'accueil
+          ← Retour à l&apos;accueil
         </Link>
 
         <section className="profileHeader">
@@ -603,7 +600,7 @@ export default function ProfilPage() {
                 />
 
                 <small>
-                  L'adresse email ne peut pas
+                  L&apos;adresse email ne peut pas
                   être modifiée ici.
                 </small>
 
@@ -907,7 +904,7 @@ export default function ProfilPage() {
               <span>✓</span>
 
               <p>
-                Votre mot de passe n'est jamais
+                Votre mot de passe n&apos;est jamais
                 stocké dans le navigateur.
               </p>
             </div>

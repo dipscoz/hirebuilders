@@ -1,15 +1,16 @@
 "use client";
 
 
-import Link from "next/link";
 import {useState} from "react";
 
+type Employee = { id: number; name: string; phone: string; job: string; city: string; experience: string };
 
 
-export default function Cards({employees}:any){
+
+export default function Cards({employees}: { employees: Employee[] }){
 
 
-const [selected,setSelected]=useState<any>(null);
+const [selected,setSelected]=useState<Employee | null>(null);
 
 
 
@@ -19,7 +20,7 @@ return(
 
 
 
-{employees.map((e:any)=>(
+{employees.map((e)=>(
 
 
 <div className="employee-card" key={e.id}>

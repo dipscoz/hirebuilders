@@ -1,11 +1,8 @@
 "use client";
 
 
-interface Props {
-
-employees:any[];
-
-}
+type Employee = { available: boolean; status: string };
+interface Props { employees: Employee[] }
 
 
 

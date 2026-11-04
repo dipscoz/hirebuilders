@@ -15,7 +15,7 @@ avec des professionnels qualifiés.
 
 <ul>
 
-<li>✅ Location d'employés bâtiment</li>
+<li>✅ Location d&apos;employés bâtiment</li>
 
 <li>✅ Recherche par métier</li>
 

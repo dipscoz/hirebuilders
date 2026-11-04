@@ -74,7 +74,7 @@ try{
 
 await fetch(
 
-`http://localhost:5000/api/employees/${employee.id}`,
+`/api/employees/${employee.id}`,
 
 {
 

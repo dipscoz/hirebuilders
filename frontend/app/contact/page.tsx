@@ -1160,7 +1160,7 @@ export default function ContactPage() {
                     </option>
 
                     <option value="location">
-                      Location d'un employé
+                      Location d&apos;un employé
                     </option>
 
                     <option value="employee">
@@ -1227,7 +1227,7 @@ export default function ContactPage() {
             <div>
 
               <div className="ctaLabel">
-                BESOIN D'UN PROFESSIONNEL ?
+                BESOIN D&apos;UN PROFESSIONNEL ?
               </div>
 
               <h2>

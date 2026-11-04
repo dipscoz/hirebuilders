@@ -5,11 +5,8 @@ import EmployeeCard from "./EmployeeCard";
 
 
 
-interface Props {
-
-employees:any[];
-
-}
+type Employee = { id: number; name: string; phone: string; job: string; city: string; experience: string; available: boolean; status: string };
+interface Props { employees: Employee[] }
 
 
 

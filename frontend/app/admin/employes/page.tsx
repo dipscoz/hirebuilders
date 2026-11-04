@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface Employee {
   id: number;
@@ -15,9 +15,6 @@ interface Employee {
   createdAt?: string;
 }
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 export default function AdminEmployes() {
   const [employees, setEmployees] =
@@ -38,14 +35,14 @@ export default function AdminEmployes() {
   const [error, setError] =
     useState("");
 
-  async function loadEmployees() {
+  const loadEmployees = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
 
       const response =
         await fetch(
-          `${API}/api/employees/admin/all`,
+          `/api/employees/admin/all`,
           {
             method: "GET",
             credentials: "include",
@@ -92,11 +89,12 @@ export default function AdminEmployes() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
-    loadEmployees();
-  }, []);
+    const initialLoad = window.setTimeout(() => void loadEmployees(), 0);
+    return () => window.clearTimeout(initialLoad);
+  }, [loadEmployees]);
 
 
   // =========================================================
@@ -121,7 +119,7 @@ export default function AdminEmployes() {
 
       const response =
         await fetch(
-          `${API}/api/employees/${id}/approve`,
+          `/api/employees/${id}/approve`,
           {
             method: "PUT",
 
@@ -201,7 +199,7 @@ export default function AdminEmployes() {
 
       const response =
         await fetch(
-          `${API}/api/employees/${id}/reject`,
+          `/api/employees/${id}/reject`,
           {
             method: "PUT",
 
@@ -281,7 +279,7 @@ export default function AdminEmployes() {
 
       const response =
         await fetch(
-          `${API}/api/employees/${id}/reactivate`,
+          `/api/employees/${id}/reactivate`,
           {
             method: "PUT",
 

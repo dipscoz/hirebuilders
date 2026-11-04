@@ -1,7 +1,7 @@
 "use client";
 
 
-import {useState} from "react";
+import {useState, type ChangeEvent} from "react";
 
 
 export default function AjouterEmploye(){
@@ -22,7 +22,7 @@ const [message,setMessage]=useState("");
 
 
 
-function change(e:any){
+function change(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>){
 
 setForm({
 
@@ -44,7 +44,7 @@ try{
 
 const response=await fetch(
 
-"http://localhost:5000/api/employees",
+"/api/employees",
 
 {
 
@@ -96,7 +96,7 @@ setMessage(
 
 }
 
-catch(error){
+catch{
 
 setMessage(
 "Serveur inaccessible"
@@ -167,7 +167,7 @@ onChange={change}
 
 <button onClick={envoyer}>
 
-Ajouter l'employé
+Ajouter l&apos;employé
 
 </button>
 
