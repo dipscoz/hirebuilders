@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Découvrez les métiers du BTP à Dakar. Les inscriptions et demandes HireBuilders sont temporairement suspendues pendant la préparation du service.",
+    "Découvrez les métiers du BTP à Dakar. Les comptes sont ouverts; candidatures, réservations et demandes restent suspendues.",
 
   keywords: [
     "HireBuilders",
@@ -110,7 +110,7 @@ export const metadata: Metadata = {
       "HireBuilders — Professionnels du BTP à Dakar",
 
     description:
-      "Découvrez les métiers du BTP à Dakar. Les demandes HireBuilders sont temporairement suspendues pendant la préparation du service.",
+      "Découvrez les métiers du BTP à Dakar. Les comptes sont ouverts; candidatures et réservations restent suspendues.",
   },
 
   twitter: {
@@ -121,7 +121,7 @@ export const metadata: Metadata = {
       "HireBuilders — Professionnels du BTP à Dakar",
 
     description:
-      "Découvrez les métiers du BTP à Dakar. Les demandes HireBuilders sont temporairement suspendues pendant la préparation du service.",
+      "Découvrez les métiers du BTP à Dakar. Les comptes sont ouverts; candidatures et réservations restent suspendues.",
   },
 
   appleWebApp: {
@@ -197,7 +197,7 @@ export default function RootLayout({
 
       <body>
         <div className="servicePauseBanner" role="status">
-          Les inscriptions et demandes HireBuilders sont temporairement suspendues. <Link href="/service-en-preparation">En savoir plus</Link>
+          Connexion et création de compte sont ouvertes. Les candidatures, réservations et messages restent suspendus. <Link href="/service-en-preparation">En savoir plus</Link>
         </div>
         {children}
       </body>

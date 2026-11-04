@@ -92,7 +92,6 @@ app.use(
 // notification, or employee-profile data until the required legal and data
 // protection formalities and service terms are in place.
 const pausedDataRoots = [
-  "/api/auth",
   "/api/employee-applications",
   "/api/employees",
   "/api/messages",
