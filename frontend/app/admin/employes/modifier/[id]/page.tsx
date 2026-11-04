@@ -489,7 +489,7 @@ export default function ModifierEmployePage() {
                   name="city"
                   value={form.city}
                   onChange={handleChange}
-                  placeholder="Dakar"
+                  placeholder="Ville du professionnel"
                 />
 
               </div>
@@ -690,7 +690,7 @@ export default function ModifierEmployePage() {
 
                 <strong>
                   {form.city ||
-                    "Sénégal"}
+                    "Ville non renseignée"}
                 </strong>
               </div>
 

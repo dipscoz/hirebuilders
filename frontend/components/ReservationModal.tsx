@@ -41,7 +41,7 @@ Téléphone : ${phone}
 Message : ${message}`;
 
     const url =
-      "https://wa.me/221770000000?text=" +
+      "https://wa.me/221781252980?text=" +
       encodeURIComponent(text);
 
     window.open(url, "_blank");

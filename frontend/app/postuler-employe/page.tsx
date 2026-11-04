@@ -254,7 +254,7 @@ export default function PostulerEmployePage() {
               </div>
 
               <div className="brandSub">
-                Plateforme BTP Sénégal
+                HireBuilders · BTP à Dakar
               </div>
             </div>
           </Link>
@@ -523,7 +523,7 @@ export default function PostulerEmployePage() {
                   onChange={
                     handleChange
                   }
-                  placeholder="Ex : Dakar"
+                  placeholder="Votre ville"
                 />
 
               </div>

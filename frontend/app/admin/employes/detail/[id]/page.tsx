@@ -452,7 +452,7 @@ export default function DetailEmployePage() {
 
                 <strong>
                   {employee.city ||
-                    "Sénégal"}
+                    "Ville non renseignée"}
                 </strong>
               </div>
 

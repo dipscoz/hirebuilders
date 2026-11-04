@@ -722,7 +722,7 @@ export default function Navbar() {
 
 
             <div className="brandTagline">
-              Plateforme BTP Sénégal
+              Professionnels BTP · Dakar
             </div>
 
           </div>

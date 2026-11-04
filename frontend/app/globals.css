@@ -646,6 +646,15 @@ button {
   text-align: center;
 }
 
+.landing-page .sectionTitle .eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--yellow);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .18em;
+}
+
 .landing-page .sectionTitle h2 {
   color: white;
 
@@ -708,19 +717,18 @@ button {
 }
 
 .landing-page .statCard h3 {
-  color: var(--yellow);
-
-  font-size: 31px;
-
-  font-weight: 900;
+  margin-top: 16px;
+  color: white;
+  font-size: 17px;
+  line-height: 1.35;
+  font-weight: 800;
 }
 
-.landing-page .statCard h4 {
-  margin-top: 8px;
-
-  color: white;
-
-  font-size: 14px;
+.landing-page .statCard .stepNumber {
+  color: var(--yellow);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .12em;
 }
 
 .landing-page .statCard p {
@@ -728,7 +736,8 @@ button {
 
   color: var(--text-muted);
 
-  font-size: 11px;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 

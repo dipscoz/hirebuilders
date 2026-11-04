@@ -1010,7 +1010,7 @@ export default function EmployesPage() {
                 </div>
 
                 <div className="brandSub">
-                  Plateforme BTP Sénégal
+                  HireBuilders · BTP à Dakar
                 </div>
               </div>
             </Link>
@@ -1065,7 +1065,7 @@ export default function EmployesPage() {
             <div>
 
               <div className="badge">
-                ✓ Professionnels BTP vérifiés
+                PROFILS DE PROFESSIONNELS DU BTP
               </div>
 
               <h1>
@@ -1075,9 +1075,8 @@ export default function EmployesPage() {
               </h1>
 
               <p>
-                Découvrez les professionnels qualifiés
-                disponibles pour vos travaux partout
-                au Sénégal.
+                Parcourez les profils et les informations disponibles,
+                puis choisissez ceux qui correspondent à votre besoin.
               </p>
 
             </div>
@@ -1294,7 +1293,7 @@ export default function EmployesPage() {
                     <div className="info">
                       📍{" "}
                       {employee.city ||
-                        "Sénégal"}
+                        "Ville non renseignée"}
 
                       <br />
 
@@ -1310,7 +1309,7 @@ export default function EmployesPage() {
                     <div className="bottom">
 
                       <div className="verified">
-                        ✓ Profil vérifié
+                        {employee.available ? "Disponible" : "Consulter le profil"}
                       </div>
 
                       <Link
@@ -1375,7 +1374,7 @@ export default function EmployesPage() {
 
               <p style={{ marginTop: 12 }}>
                 La plateforme qui connecte les
-                professionnels du BTP au Sénégal.
+                professionnels du BTP à Dakar.
               </p>
 
             </div>
@@ -1420,29 +1419,9 @@ export default function EmployesPage() {
                 Contact
               </h3>
 
-              <p>
-                Disponible 7j/7
-              </p>
+              <p>Réponse du lundi au vendredi · Dakar</p>
 
-              <p>
-                <a
-                  href="https://wa.me/221781252980"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  💬 WhatsApp
-                </a>
-              </p>
-
-              <p>
-                <a
-                  href="https://wa.me/221781252980"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  78 125 29 80
-                </a>
-              </p>
+              <p><a href="https://wa.me/221781252980?text=Bonjour%20HireBuilders" target="_blank" rel="noopener noreferrer">WhatsApp · +221 78 125 29 80</a></p>
 
             </div>
 

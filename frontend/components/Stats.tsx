@@ -2,88 +2,55 @@
 
 import { motion } from "framer-motion";
 
-const stats = [
+const steps = [
   {
-    number: "1500+",
-    title: "Employés qualifiés",
-    text: "Professionnels disponibles",
+    number: "01",
+    title: "Explorez les métiers",
+    text: "Parcourez les spécialités proposées et choisissez celle qui correspond à votre chantier.",
   },
   {
-    number: "800+",
-    title: "Chantiers réalisés",
-    text: "Projets accompagnés",
+    number: "02",
+    title: "Consultez les profils",
+    text: "Comparez les informations disponibles : métier, ville, expérience et disponibilité.",
   },
   {
-    number: "Du lundi au vendredi",
-    title: "Réponse rapide",
-    text: "Mise en relation rapide",
+    number: "03",
+    title: "Envoyez votre demande",
+    text: "Indiquez vos dates et vos coordonnées pour transmettre une demande de réservation.",
   },
   {
-    number: "100%",
-    title: "Profils vérifiés",
-    text: "Sécurité et confiance",
+    number: "04",
+    title: "Suivez votre réservation",
+    text: "Retrouvez vos demandes dans votre espace et échangez au sujet d’une réservation.",
   },
 ];
 
 export default function Stats() {
   return (
-    <section className="statsSection">
-
+    <section className="statsSection" aria-labelledby="how-it-works-title">
       <div className="sectionTitle">
-
-        <h2>
-          Pourquoi choisir HireBuilders ?
-        </h2>
-
-        <p>
-          Une plateforme pensée pour simplifier vos recrutements.
-        </p>
-
+        <span className="eyebrow">SIMPLE ET DIRECT</span>
+        <h2 id="how-it-works-title">Comment ça marche ?</h2>
+        <p>Les étapes pour trouver un professionnel et envoyer une demande.</p>
       </div>
 
       <div className="statsGrid">
-
-        {stats.map((item, index) => (
-          <motion.div
-            key={item.title}
+        {steps.map((step, index) => (
+          <motion.article
+            key={step.number}
             className="statCard"
-            initial={{
-              opacity: 0,
-              y: 25,
-            }}
-            whileInView={{
-              opacity: 1,
-              y: 0,
-            }}
-            viewport={{
-              once: true,
-            }}
-            transition={{
-              duration: 0.45,
-              delay: index * 0.1,
-            }}
-            whileHover={{
-              y: -6,
-            }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: index * 0.08 }}
+            whileHover={{ y: -5 }}
           >
-
-            <h3>
-              {item.number}
-            </h3>
-
-            <h4>
-              {item.title}
-            </h4>
-
-            <p>
-              {item.text}
-            </p>
-
-          </motion.div>
+            <span className="stepNumber">{step.number}</span>
+            <h3>{step.title}</h3>
+            <p>{step.text}</p>
+          </motion.article>
         ))}
-
       </div>
-
     </section>
   );
 }

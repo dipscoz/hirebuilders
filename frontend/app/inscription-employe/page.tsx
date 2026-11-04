@@ -1104,7 +1104,7 @@ export default function InscriptionEmployePage() {
                 </div>
 
                 <div className="brandSub">
-                  Plateforme BTP Sénégal
+                  HireBuilders · BTP à Dakar
                 </div>
 
               </div>
@@ -1372,7 +1372,7 @@ export default function InscriptionEmployePage() {
                       event.target.value
                     )
                   }
-                  placeholder="78 125 29 80"
+                  placeholder="Votre numéro de téléphone"
                   autoComplete="tel"
                   required
                 />

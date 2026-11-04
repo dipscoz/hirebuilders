@@ -1201,7 +1201,7 @@ export default function ConnexionPage() {
                 </div>
 
                 <div className="brandSub">
-                  Plateforme BTP Sénégal
+                  HireBuilders · BTP à Dakar
                 </div>
               </div>
             </Link>

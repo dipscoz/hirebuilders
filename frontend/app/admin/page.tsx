@@ -355,7 +355,7 @@ export default function AdminPage() {
                 </div>
 
                 <h3>
-                  Plateforme BTP Sénégal
+                  HireBuilders · BTP à Dakar
                 </h3>
 
                 <p>
@@ -441,7 +441,7 @@ export default function AdminPage() {
         </div>
 
         <p>
-          Administration © 2026 HireBuilders Sénégal
+              Administration © 2026 HireBuilders
         </p>
 
       </footer>
