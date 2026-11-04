@@ -5,6 +5,7 @@ const {
   login,
   googleLogin,
   googleCallback,
+  googleExchange,
   me,
   logout,
 } = require("../controllers/authController");
@@ -47,6 +48,11 @@ router.get(
 router.get(
   "/google/callback",
   googleCallback
+);
+
+router.post(
+  "/google/exchange",
+  googleExchange
 );
 
 

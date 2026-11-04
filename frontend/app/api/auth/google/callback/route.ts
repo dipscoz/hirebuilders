@@ -1,191 +1,65 @@
-import {
-  NextRequest,
-  NextResponse,
-} from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-import jwt from "jsonwebtoken";
+export const runtime = "nodejs";
 
-const GOOGLE_HANDOFF_SECRET = process.env.GOOGLE_HANDOFF_SECRET;
+const BACKEND_URL =
+  (process.env.BACKEND_URL || "").trim().replace(/\/+$/, "") ||
+  (process.env.NODE_ENV !== "production" ? "http://localhost:5000" : "");
 
-export async function GET(
-  request: NextRequest
-) {
-  try {
-    if (
-      !GOOGLE_HANDOFF_SECRET
-    ) {
-      return NextResponse.redirect(
-        new URL(
-          "/connexion?error=google_config",
-          request.url
-        )
-      );
-    }
+const PUBLIC_GOOGLE_ERRORS = new Set([
+  "google_config",
+  "google_invalid_token",
+  "google_invalid_user",
+  "google_missing_token",
+]);
 
-    const token =
-      request.nextUrl.searchParams.get(
-        "token"
-      );
-
-    const redirectParam =
-      request.nextUrl.searchParams.get(
-        "redirect"
-      ) || "/";
-
-    if (!token) {
-      return NextResponse.redirect(
-        new URL(
-          "/connexion?error=google_missing_token",
-          request.url
-        )
-      );
-    }
-
-    let decoded: jwt.JwtPayload;
-
-    try {
-      decoded =
-        jwt.verify(
-          token,
-          GOOGLE_HANDOFF_SECRET,
-          {
-            issuer: "hirebuilders-backend",
-            audience: "hirebuilders-google-handoff",
-          }
-        ) as jwt.JwtPayload;
-    } catch (error) {
-      console.error(
-        "Jeton Google invalide :",
-        error
-      );
-
-      return NextResponse.redirect(
-        new URL(
-          "/connexion?error=google_invalid_token",
-          request.url
-        )
-      );
-    }
-
-    if (
-      decoded.type !==
-      "google_handoff"
-    ) {
-      return NextResponse.redirect(
-        new URL(
-          "/connexion?error=google_invalid_token",
-          request.url
-        )
-      );
-    }
-
-    if (!decoded.id) {
-      return NextResponse.redirect(
-        new URL(
-          "/connexion?error=google_invalid_user",
-          request.url
-        )
-      );
-    }
-
-    const redirect =
-      redirectParam === "/admin"
-        ? "/admin"
-        : "/";
-
-    const response =
-      NextResponse.redirect(
-        new URL(
-          redirect,
-          request.url
-        )
-      );
-
-    response.headers.set("Cache-Control", "no-store");
-    response.headers.set("Referrer-Policy", "no-referrer");
-
-    // -------------------------------------------------------
-    // CREATION DE LA SESSION VERCEL
-    // -------------------------------------------------------
-
-    response.cookies.set(
-      "hirebuilders_token",
-      createSessionToken(decoded),
-      {
-        httpOnly: true,
-
-        secure:
-          process.env.NODE_ENV ===
-          "production",
-
-        sameSite: "lax",
-
-        maxAge:
-          7 *
-          24 *
-          60 *
-          60,
-
-        path: "/",
-      }
-    );
-
-    return response;
-  } catch (error) {
-    console.error(
-      "Erreur callback Google Vercel :",
-      error
-    );
-
-    return NextResponse.redirect(
-      new URL(
-        "/connexion?error=google_callback_failed",
-        request.url
-      )
-    );
-  }
+function redirectToLogin(request: NextRequest, error: string) {
+  const destination = new URL("/connexion", request.url);
+  destination.searchParams.set("error", error);
+  return NextResponse.redirect(destination);
 }
 
+export async function GET(request: NextRequest) {
+  const handoffToken = request.nextUrl.searchParams.get("token");
+  if (!handoffToken) return redirectToLogin(request, "google_missing_token");
 
-// =========================================================
-// CREATION DU JWT DE SESSION
-// =========================================================
-//
-// Ici on crée le vrai token utilisé par /api/auth/me.
-// Le secret doit être identique à celui du backend.
-//
+  if (!BACKEND_URL) return redirectToLogin(request, "google_config");
 
-function createSessionToken(
-  decoded: jwt.JwtPayload
-) {
-  const sessionSecret = process.env.JWT_SECRET;
-  if (!sessionSecret) {
-    throw new Error("JWT_SECRET absent dans l'environnement serveur Vercel.");
-  }
+  try {
+    // The backend verifies its own short-lived handoff token and signs the
+    // actual session JWT. Vercel therefore does not need a second JWT secret.
+    const exchangeResponse = await fetch(
+      `${BACKEND_URL}/api/auth/google/exchange`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: handoffToken }),
+        cache: "no-store",
+      },
+    );
 
-  return jwt.sign(
-    {
-      id: Number(
-        decoded.id
-      ),
-
-      email:
-        decoded.email,
-
-      role:
-        decoded.role,
-
-      firstName:
-        String(decoded.firstName || ""),
-
-      lastName:
-        String(decoded.lastName || ""),
-    },
-    sessionSecret,
-    {
-      expiresIn: "7d",
-      issuer: "hirebuilders-frontend",
-      audience: "hirebuilders-session",
+    const exchange = await exchangeResponse.json().catch(() => null);
+    if (!exchangeResponse.ok || typeof exchange?.token !== "string") {
+      const errorCode = PUBLIC_GOOGLE_ERRORS.has(exchange?.code)
+        ? exchange.code
+        : "google_exchange_failed";
+      return redirectToLogin(request, errorCode);
     }
-  );
+
+    const redirectPath = exchange.redirect === "/admin" ? "/admin" : "/";
+    const response = NextResponse.redirect(new URL(redirectPath, request.url));
+    response.headers.set("Cache-Control", "no-store");
+    response.headers.set("Referrer-Policy", "no-referrer");
+    response.cookies.set("hirebuilders_token", exchange.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60,
+      path: "/",
+    });
+    return response;
+  } catch (error) {
+    console.error("Échange de session Google indisponible:", error);
+    return redirectToLogin(request, "google_exchange_failed");
+  }
 }

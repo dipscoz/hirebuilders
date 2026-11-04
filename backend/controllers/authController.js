@@ -541,6 +541,88 @@ async function googleCallback(
 
 
 // =========================================================
+// ECHANGE DU JETON GOOGLE CONTRE UNE SESSION
+// =========================================================
+
+async function googleExchange(req, res) {
+  try {
+    const handoffToken = req.body?.token;
+    if (typeof handoffToken !== "string" || !handoffToken) {
+      return res.status(400).json({
+        success: false,
+        code: "google_missing_token",
+        message: "Jeton de connexion manquant.",
+      });
+    }
+
+    if (!GOOGLE_HANDOFF_SECRET) {
+      return res.status(503).json({
+        success: false,
+        code: "google_config",
+        message: "La connexion Google n'est pas configurée.",
+      });
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(handoffToken, GOOGLE_HANDOFF_SECRET, {
+        issuer: "hirebuilders-backend",
+        audience: "hirebuilders-google-handoff",
+      });
+    } catch {
+      return res.status(401).json({
+        success: false,
+        code: "google_invalid_token",
+        message: "Le jeton de connexion Google est invalide ou expiré.",
+      });
+    }
+
+    const userId = Number(decoded?.id);
+    if (decoded?.type !== "google_handoff" || !Number.isInteger(userId) || userId <= 0) {
+      return res.status(401).json({
+        success: false,
+        code: "google_invalid_user",
+        message: "Le compte Google n'a pas pu être vérifié.",
+      });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || normalizeEmail(user.email) !== normalizeEmail(decoded.email)) {
+      return res.status(401).json({
+        success: false,
+        code: "google_invalid_user",
+        message: "Le compte Google n'est plus disponible.",
+      });
+    }
+
+    let role = user.role;
+    if (isAdminEmail(user.email) && user.role !== "admin") {
+      role = "admin";
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { role },
+      });
+    }
+
+    const sessionUser = { ...user, role };
+    return res.json({
+      success: true,
+      token: createToken(sessionUser),
+      user: getPublicUser(sessionUser),
+      redirect: role === "admin" ? "/admin" : "/",
+    });
+  } catch (error) {
+    console.error("Erreur échange de session Google :", error);
+    return res.status(500).json({
+      success: false,
+      code: "google_exchange_failed",
+      message: "Impossible d'ouvrir la session Google.",
+    });
+  }
+}
+
+
+// =========================================================
 // UTILISATEUR CONNECTE
 // =========================================================
 
@@ -708,6 +790,7 @@ module.exports = {
   login,
   googleLogin,
   googleCallback,
+  googleExchange,
   me,
   logout,
   changePassword,

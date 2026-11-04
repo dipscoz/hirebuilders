@@ -32,6 +32,8 @@ const AUTH_ERRORS: Record<string, string> = {
     "L’adresse e-mail du compte Google n’est pas vérifiée. Vérifiez-la auprès de Google puis réessayez.",
   google_login_failed:
     "Google n’a pas pu terminer la connexion. Réessayez ou utilisez votre adresse e-mail et votre mot de passe.",
+  google_exchange_failed:
+    "Google a confirmé votre compte, mais HireBuilders n’a pas pu ouvrir la session. Réessayez.",
 };
 
 export default async function ConnexionPage({ searchParams }: ConnexionPageProps) {
