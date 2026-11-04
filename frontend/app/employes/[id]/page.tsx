@@ -230,7 +230,7 @@ export default function EmployeeProfilePage() {
               Employés
             </Link>
 
-            <Link href="/categories/metier">
+            <Link href="/categories">
               Métiers
             </Link>
 
@@ -533,7 +533,7 @@ export default function EmployeeProfilePage() {
               Employés
             </Link>
 
-            <Link href="/categories/metier">
+            <Link href="/categories">
               Métiers
             </Link>
 

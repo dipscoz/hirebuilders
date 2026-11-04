@@ -224,7 +224,7 @@ export default function LouerEmploye() {
               Employés
             </Link>
 
-            <Link href="/categories/metier">
+            <Link href="/categories">
               Métiers
             </Link>
 
@@ -779,7 +779,7 @@ export default function LouerEmploye() {
               Employés
             </Link>
 
-            <Link href="/categories/metier">
+            <Link href="/categories">
               Métiers
             </Link>
 
