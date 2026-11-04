@@ -156,7 +156,7 @@ Hire<span>Builders</span>
 
 <p>
 
-Les outils pour parcourir des profils de professionnels du BTP à Dakar et transmettre vos demandes.
+Découvrez les métiers du BTP à Dakar. Les demandes ouvriront après la préparation du service.
 
 </p>
 
@@ -228,11 +228,10 @@ Contact
 
 <h3>Contact</h3>
 
-<p>Réponse du lundi au vendredi · Dakar</p>
-
-<a href="https://wa.me/221781252980?text=Bonjour%20HireBuilders" target="_blank" rel="noopener noreferrer" className="footerWhatsapp">
-  WhatsApp · +221 78 125 29 80
-</a>
+<p>Les demandes sont temporairement suspendues pendant la préparation du service.</p>
+<Link href="/service-en-preparation" className="footerWhatsapp">
+  Informations sur le lancement
+</Link>
 
 
 
